@@ -1,6 +1,8 @@
 package edu.neu.coe.csye6225.entity;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String username;
 
     private String password;
