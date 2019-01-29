@@ -1,15 +1,17 @@
 package edu.neu.coe.csye6225.controller;
 
+import edu.neu.coe.csye6225.entity.User;
+import edu.neu.coe.csye6225.service.AccountService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
 @Controller
 @RequestMapping(value = "/")
 public class HomeController {
+
+
 
     @RequestMapping(value = "message", method = RequestMethod.GET)
     public @ResponseBody
@@ -19,4 +21,9 @@ public class HomeController {
         response.add("world");
         return response;
     }
+
+
+
+
+
 }
