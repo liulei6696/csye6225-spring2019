@@ -73,8 +73,11 @@ public class UserMapperTest {
             UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
             User user = userMapper.getUserByUsername("aaa");
             user.setPassword("123345");
-            userMapper.updateUser(user);
-            System.out.println(userMapper.getUserByUsername("aaa"));
+            System.out.println("---return info: 1 represents success, 0 represents failure.---");
+            System.out.println(userMapper.updateUser(user));
+            System.out.println("-----------");
+
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -84,5 +87,60 @@ public class UserMapperTest {
         }
     }
 
+
+    @Test
+    public void testInsertUser(){
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+
+            UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
+            User user = new User();
+            user.setUsername("23333");
+            user.setPassword("66666");
+            System.out.println("---return info: 1 represents success, 0 represents failure.---");
+            System.out.println(userMapper.insertUser(user));
+            System.out.println("-----------");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+
+    @Test
+    public void testDeleteUserByUsername(){
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+
+            UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
+
+            System.out.println("------");
+            System.out.println(userMapper.deleteUserByUsername("zzy"));
+            User user = userMapper.getUserByUsername("zzy");
+            if(user==null)
+                System.out.println("success");
+            else
+                System.out.println("fail");
+
+            System.out.println("-----------");
+
+            if(user==null)
+                System.out.println("success");
+            else
+                System.out.println("fail");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 
 }
