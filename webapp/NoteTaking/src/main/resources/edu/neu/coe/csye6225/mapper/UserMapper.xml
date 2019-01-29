@@ -29,4 +29,13 @@
     where username=#{username, jdbcType=VARCHAR}
   </update>
 
+    <insert id="insertUser" parameterType="user">
+        insert into user(username,password)
+        values(#{username},#{password})
+    </insert>
+
+    <delete id="deleteUserByUsername" parameterType="User">
+        DELETE FROM user WHERE username = #{user.username}
+    </delete>
+
 </mapper>
