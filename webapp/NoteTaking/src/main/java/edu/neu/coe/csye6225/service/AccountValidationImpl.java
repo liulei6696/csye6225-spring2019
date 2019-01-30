@@ -59,10 +59,6 @@ public class AccountValidationImpl implements AccountValidation {
     @Override
     public boolean isPasswordCorrect(User user) {
         User thisuser = userMapper.getUserByUsername(user.getUsername());
-//        if(user.getPassword().equals(thisuser.getPassword()))
-//            return true;
-//        else
-//            return false;
         if (BCrypt.checkpw(user.getPassword(), thisuser.getPassword()))
             return true;
         else
