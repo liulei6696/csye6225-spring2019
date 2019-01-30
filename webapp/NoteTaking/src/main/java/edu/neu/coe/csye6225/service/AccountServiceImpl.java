@@ -13,13 +13,22 @@ public class AccountServiceImpl implements AccountService {
     private UserMapper userMapper;
 
     // Log in
-    public void logIn(User user) {
+    public boolean logIn(User user) {
         AccountValidationImpl asimpl = new AccountValidationImpl();
         if(user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
             System.out.println("Username or password cannot be empty!");
+            return false;
         } else {
             // TODO basic authentication
-            System.out.println(user.getUsername() + ":/" + user.getPassword());
+            if(isUserRegistered(user.getUsername())&& user.equals(userMapper.getUserByUsername(user.getUsername()))) {
+                System.out.println(user.getUsername() + ":/" + user.getPassword());
+                return true;
+            }
+
+            else {
+                System.out.println("Wrong password!");
+                return false;
+            }
         }
     }
 
