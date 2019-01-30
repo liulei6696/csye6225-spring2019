@@ -1,11 +1,19 @@
 package edu.neu.coe.csye6225.service;
 
+import edu.neu.coe.csye6225.entity.User;
+import edu.neu.coe.csye6225.mapper.UserMapper;
 import org.mindrot.jbcrypt.BCrypt;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AccountValidationImpl implements AccountValidation{
+@Service
+public class AccountValidationImpl implements AccountValidation {
+
+    @Autowired
+    private UserMapper userMapper;
+
     public AccountValidationImpl() {
     }
 
@@ -39,5 +47,25 @@ public class AccountValidationImpl implements AccountValidation{
     // Password encryption
     public String passwordEncrypt(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt(12));
+    }
+
+    public boolean isUserRegistered(User user) {
+        User thisuser = userMapper.getUserByUsername(user.getUsername());
+        if (thisuser == null) return false;
+        else return true;
+
+    }
+
+    @Override
+    public boolean isPasswordCorrect(User user) {
+        User thisuser = userMapper.getUserByUsername(user.getUsername());
+//        if(user.getPassword().equals(thisuser.getPassword()))
+//            return true;
+//        else
+//            return false;
+        if (BCrypt.checkpw(user.getPassword(), thisuser.getPassword()))
+            return true;
+        else
+            return false;
     }
 }
