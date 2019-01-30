@@ -1,5 +1,6 @@
-package edu.neu.coe.csye6225.controller;
+package edu.neu.coe.csye6225.config.interceptors;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -11,6 +12,8 @@ import io.micrometer.core.instrument.util.StringUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -19,11 +22,21 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class LoginInterceptor implements HandlerInterceptor {
-    @Autowired
 
+@Component
+public class LoginInterceptor implements HandlerInterceptor {
+
+
+
+    //@Autowired
+   //@Qualifier("accountServiceImpl")
     private AccountService accountService;
     private static final String SESSION_KEY = "SESSION_KEY";
+
+    @Autowired
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
