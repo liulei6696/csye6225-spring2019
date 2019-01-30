@@ -32,15 +32,15 @@ public class AccountController {
         if(user == null){
             httpServletResponse.setStatus(SC_UNAUTHORIZED);
 
-            httpServletResponse.sendError(SC_UNAUTHORIZED,"I am not logging because User's information is wrong");
+            httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
             return result;
         }
         if(accountService.logIn(user)){
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return df.format(new Date());
         }else {
             httpServletResponse.setStatus(SC_UNAUTHORIZED);
-            httpServletResponse.sendError(SC_UNAUTHORIZED,"I am not logging because User's information is wrong ");
+            httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
             return result;
         }
 
