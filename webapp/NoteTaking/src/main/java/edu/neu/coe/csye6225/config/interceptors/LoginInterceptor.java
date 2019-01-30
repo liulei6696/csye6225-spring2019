@@ -4,14 +4,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.auth0.jwt.internal.org.apache.commons.codec.binary.Base64;
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+
+import edu.neu.coe.csye6225.entity.User;
+import edu.neu.coe.csye6225.service.AccountService;
+import io.micrometer.core.instrument.util.StringUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.nio.charset.Charset;
 
-public class SecurityInterceptor implements HandlerInterceptor {
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class LoginInterceptor implements HandlerInterceptor {
+    @Autowired
+
+    private AccountService accountService;
     private static final String SESSION_KEY = "SESSION_KEY";
 
     @Override
@@ -35,21 +46,17 @@ public class SecurityInterceptor implements HandlerInterceptor {
                 String account[] = accountString.split(":");
 
                 if(account.length == 2) {
-
-                    String password = "test";
-
-                    AccountService accountService = (AccountService) SpringApplicationContext.getBean("AccountService");
-
-                    Account account = accountService.getAccount();
-
-
-
-                    if(StringUtils.equals("test", account[0]) && StringUtils.equals(password, account[1])) {
-
+                    User user = new User();
+                    user.setUsername(account[0]);
+                    user.setPassword(account[1]);
+                    if(accountService.logIn(user)){
                         session.setAttribute(SESSION_KEY, true);
-
+                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//set date format
+                        System.out.println(df.format(new Date()));// new Date()get current system time
                         return true;
                     }
+
+
                 }
             }
         }
@@ -59,7 +66,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
         response.setHeader("WWW-Authenticate", "Basic realm=\"STOP!\"");
         response.setHeader("Content-Type", "text/html");
 
-        response.getWriter().print("<!DOCTYPE HTML><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body align=\"center\"><h3>没有权限，慎入！！！</h3></body></html>");
+        response.getWriter().print("<!DOCTYPE HTML><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body align=\"center\"><h3>You are not authorized！！！</h3></body></html>");
 
         return false;
     }
