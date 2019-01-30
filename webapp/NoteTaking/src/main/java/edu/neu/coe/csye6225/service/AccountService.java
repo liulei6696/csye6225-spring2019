@@ -10,6 +10,10 @@ public interface AccountService {
     // Create a new account
     void signUp(String username, String password);
 
+    User getUser(String u, String p);
+
+
+
 
 
 }

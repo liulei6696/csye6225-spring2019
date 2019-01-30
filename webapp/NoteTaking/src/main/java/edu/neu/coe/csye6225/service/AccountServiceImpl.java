@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Component
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -52,6 +51,11 @@ public class AccountServiceImpl implements AccountService {
             System.out.println("Fail to sign up!");
         }
 
+    }
+
+    @Override
+    public User getUser(String u, String p) {
+        return new User(u,p);
     }
 
     public boolean isUserRegistered(String username) {
