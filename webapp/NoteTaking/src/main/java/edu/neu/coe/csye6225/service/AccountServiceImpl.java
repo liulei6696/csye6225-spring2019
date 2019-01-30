@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Component
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -14,13 +13,22 @@ public class AccountServiceImpl implements AccountService {
     private UserMapper userMapper;
 
     // Log in
-    public void logIn(User user) {
+    public boolean logIn(User user) {
         AccountValidationImpl asimpl = new AccountValidationImpl();
         if(user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
             System.out.println("Username or password cannot be empty!");
+            return false;
         } else {
             // TODO basic authentication
-            System.out.println(user.getUsername() + ":/" + user.getPassword());
+            if(isUserRegistered(user.getUsername())&& user.equals(userMapper.getUserByUsername(user.getUsername()))) {
+                System.out.println(user.getUsername() + ":/" + user.getPassword());
+                return true;
+            }
+
+            else {
+                System.out.println("Wrong password!");
+                return false;
+            }
         }
     }
 
@@ -52,6 +60,11 @@ public class AccountServiceImpl implements AccountService {
             System.out.println("Fail to sign up!");
         }
 
+    }
+
+    @Override
+    public User getUser(String u, String p) {
+        return new User(u,p);
     }
 
     public boolean isUserRegistered(String username) {
