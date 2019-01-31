@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.neu.coe.csye6225.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="edu.neu.coe.csye6225.entity.User">
+        <id column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+
+    </resultMap>
+
+
+    <select id="getAllUsers"  resultMap="BaseResultMap">
+        select
+        *
+        from user
+    </select>
+
+    <select id="getUserByUsername" flushCache="true" parameterType="String"  resultMap="BaseResultMap">
+        select
+        *
+        from user
+        where username=#{username, jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateUser"  parameterType="user">
+    update user
+    set
+    password=#{password, jdbcType=VARCHAR}
+    where username=#{username, jdbcType=VARCHAR}
+  </update>
+
+    <insert id="insertUser" parameterType="user">
+        insert into user(username,password)
+        values(#{username},#{password})
+    </insert>
+
+    <delete id="deleteUserByUsername" parameterType="User">
+        DELETE FROM user WHERE username = #{user.username}
+    </delete>
+
+</mapper>
