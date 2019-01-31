@@ -39,42 +39,42 @@ Junit needs to be imported for running Junit tests.
 
 Service level:
 
-1.testSignup function:
+1. testSignup function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), run the test. If four assertion functions satisfy, this test passes.
 
-2.testLogin function:
+2. testLogin function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), run the test. If one assertion function satisfies, this test passes.
 
-3.nameValidation function:
+3. nameValidation function:
 Run the test. If four assertion functions satisfy, this test passes.
 
-4.isPasswordStrong function:
+4. isPasswordStrong function:
 Run the test. If three assertion functions satisfy, this test passes.
 
-5.passwordEncrypt function:
+5. passwordEncrypt function:
 Run the test. If one assertion function satisfies, this test passes.
 
-6.isUserRegistered function:
+6. isUserRegistered function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), run the test. If two assertion functions satisfy, this test passes.
 
-7.isPasswordCorrect function:
+7. isPasswordCorrect function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), run the test. If two assertion functions satisfy, this test passes.
 
 Dao level:
 
-1.testGetAllUsers function:
+1. testGetAllUsers function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), insert no less then one record in the database, run the test. If one assertion function satisfies, this test passes.
 
-2.testGetUserByUsername function:
+2. testGetUserByUsername function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), insert one record with username is "aaa" in the database, run the test. If one assertion function satisfies, this test passes.
 
-3.testUpdateUser function:
+3. testUpdateUser function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), insert one record with username is "aaa" in the database, run the test. If two assertion functions satisfy, this test passes.
 
-4.testInsertUser function:
+4. testInsertUser function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), make sure no user with username "123@qq.com" exists in the database, run the test. If one assertion function satisfies, this test passes.
 
-5.testDeleteUserByUsername function:
+5. testDeleteUserByUsername function:
 Create database and table user with attributes of username(VARCHAR) and password(VARCHAR), insert one record with username is "zzy" in the database, run the test. If two assertion functions satisfy, this test passes.
 
 ## CI/CD
