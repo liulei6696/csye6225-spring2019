@@ -42,28 +42,33 @@ public class AccountServiceImpl implements AccountService {
     }
 
     // Create a new account for user
-    public void signUp(User user) {
+    public boolean signUp(User user) {
         String username = user.getUsername();
         String password = user.getPassword();
         if (username.isEmpty() || password.isEmpty()) {
             System.out.println("Username or password cannot be empty!");
+            return false;
         } else if (accountValidation.nameValidation(username)) {
             if (accountValidation.isUserRegistered(user)) {
                 System.out.println("User already registered! Please sign in!");
+                return false;
             } else {
                 if (accountValidation.isPasswordStrong(password)) {
                     String saltedPwd = accountValidation.passwordEncrypt(password);
                     User saltedUser = new User(username, saltedPwd);
                     userMapper.insertUser(saltedUser);
                     System.out.println("User registration success!");
+                    return true;
                 } else {
                     System.out.println("Your password is not strong enough!");
+                    return false;
                 }
 
             }
 
         } else {
             System.out.println("Fail to sign up! Username should be email address!");
+            return false;
         }
 
     }

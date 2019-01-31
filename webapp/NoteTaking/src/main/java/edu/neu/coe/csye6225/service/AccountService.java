@@ -7,7 +7,7 @@ public interface AccountService {
     boolean logIn(User user);
 
     // User registration
-    void signUp(User user);
+    boolean signUp(User user);
 
 
 }
