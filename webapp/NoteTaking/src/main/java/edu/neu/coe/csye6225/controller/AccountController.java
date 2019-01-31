@@ -34,6 +34,7 @@ public class AccountController {
 
             httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
             return result;
+
         }
         if(accountService.logIn(user)){
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
