@@ -26,7 +26,7 @@ installed and set up on your local system.
 4. Set up the username and password of your MySQL in **src/main/java/resourse/application.properties**
 5. Create a database named _csye6225_ and build a table named _user_ with structure:
 | ColumnName | Datatype | PK | Null | Binary |
-| --- | --- | --- | --- | --- |
+|:-:|:-:|:-:|:-:|:-:|
 | username | varchar(255) | yes | no | yes |
 | password | varchar(255) | no | no | yes |
 
