@@ -47,10 +47,12 @@ public class AccountController {
             httpServletResponse.setStatus(SC_UNAUTHORIZED);
 
             httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
+
             resultJson.put("status", String.valueOf(HttpStatus.UNAUTHORIZED));
             resultJson.put("message", "Login failure! The username or password is wrong");
             return ResponseEntity.badRequest()
                     .body(resultJson.toString());
+
         }
         if(accountService.logIn(user)){
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
