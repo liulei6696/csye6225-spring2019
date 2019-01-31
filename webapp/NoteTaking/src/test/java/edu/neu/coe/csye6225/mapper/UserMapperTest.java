@@ -1,10 +1,12 @@
 package edu.neu.coe.csye6225.mapper;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.neu.coe.csye6225.entity.User;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,9 +35,7 @@ public class UserMapperTest {
             sqlSession = sqlSessionFactory.openSession();
 
             List<User> users = sqlSession.selectList("getAllUsers");
-            for (int i = 0; i < users.size(); i++) {
-                System.out.println(users.get(i));
-            }
+            Assert.assertNotNull(users);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -54,7 +54,7 @@ public class UserMapperTest {
 
             UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
             User user = userMapper.getUserByUsername("aaa");
-            System.out.println(user);
+            Assert.assertNotNull(user);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -72,10 +72,10 @@ public class UserMapperTest {
 
             UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
             User user = userMapper.getUserByUsername("aaa");
-            user.setPassword("123345");
-            System.out.println("---return info: 1 represents success, 0 represents failure.---");
-            System.out.println(userMapper.updateUser(user));
-            System.out.println("-----------");
+            Assert.assertNotEquals("1234@qqx",user.getPassword());
+            user.setPassword("1234@qqx");
+            userMapper.updateUser(user);
+            Assert.assertEquals("1234@qqx",userMapper.getUserByUsername("aaa").getPassword());
 
 
         } catch (Exception e) {
@@ -96,11 +96,10 @@ public class UserMapperTest {
 
             UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
             User user = new User();
-            user.setUsername("23333");
-            user.setPassword("66666");
-            System.out.println("---return info: 1 represents success, 0 represents failure.---");
-            System.out.println(userMapper.insertUser(user));
-            System.out.println("-----------");
+            user.setUsername("123@qq.com");
+            user.setPassword("123!@#zxc");
+            userMapper.insertUser(user);
+            Assert.assertEquals(user.getPassword(),userMapper.getUserByUsername(user.getUsername()).getPassword());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,21 +117,9 @@ public class UserMapperTest {
             sqlSession = sqlSessionFactory.openSession();
 
             UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
-
-            System.out.println("------");
-            System.out.println(userMapper.deleteUserByUsername("zzy"));
-            User user = userMapper.getUserByUsername("zzy");
-            if(user==null)
-                System.out.println("success");
-            else
-                System.out.println("fail");
-
-            System.out.println("-----------");
-
-            if(user==null)
-                System.out.println("success");
-            else
-                System.out.println("fail");
+            Assert.assertNotNull(userMapper.getUserByUsername("zzy"));
+            userMapper.deleteUserByUsername("zzy");
+            Assert.assertNull(userMapper.getUserByUsername("zzy"));
 
         } catch (Exception e) {
             e.printStackTrace();
