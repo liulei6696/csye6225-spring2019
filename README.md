@@ -19,7 +19,7 @@ Spring boot + MyBatis + Maven + MySQL
 
 
 ## Running Tests
-Junit needed to be imported for running Junit tests.
+Junit needs to be imported for running Junit tests.
 
 Service level:
 
