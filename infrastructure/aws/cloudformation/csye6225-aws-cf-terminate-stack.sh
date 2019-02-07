@@ -1,16 +1,22 @@
 #!/bin/bash
 set -e
-echo "Input name of the stack that you want to terminate:"
-read stackName
+
+# cd to script directory
+work_dir=$(cd `dirname $0`; pwd)
+cd ${work_dir}
+
+read -p "Input name of the stack that you want to terminate: " stackName
 aws cloudformation delete-stack --stack-name $stackName
+echo "deleting"
 aws cloudformation wait stack-delete-complete --stack-name $stackName
+
+echo "delete stack "${stackName}" success"
 #aws cloudformation describe-stacks
 #echo "Stack deleted successfully“
-a=$(aws cloudformation describe-stacks)
-b=$(jq '.Stacks[0].StackName'<<<"$a")
-if [ !"$b" ] || [ "$b"!="$stackName" ]; 
-then 
-echo "Stack was successfully deleted"; 
-else 
-echo "Deletion failure"; 
-fi
+#b=$(aws cloudformation describe-stacks | grep -o '"StackName": *"[^"]*"' | grep -o '"[^"]*"$' | #sed 's/\"//g')
+#if [ !"$b" ] || [ "$b"!="$stackName" ]; 
+#then 
+#echo "Stack was successfully deleted"; 
+#else 
+#echo "Deletion failure"; 
+#fi

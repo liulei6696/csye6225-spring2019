@@ -1,14 +1,18 @@
 #! /bin/bash
 set -e
-echo "Input name of the new stack:"
-read stackName
+
+# cd to script directory
+work_dir=$(cd `dirname $0`; pwd)
+cd ${work_dir}
+
+read -p "Input name of the new stack: " stackName
 aws cloudformation create-stack --stack-name $stackName --template-body file://csye6225-cf-networking.yaml
+echo "creating"
 aws cloudformation wait stack-create-complete --stack-name $stackName
-a=$(aws cloudformation describe-stacks)
-b=$(jq '.Stacks[0].StackName'<<<"$a")
+b=$(aws cloudformation describe-stacks | grep -o '"StackName": *"[^"]*"' | grep -o '"[^"]*"$' | sed 's/\"//g' | head -n 1)
 if [ $b ] && [ "$b"=="$stackName" ]; 
 then 
-echo "Stack was successfully created"; 
+echo "Stack "${stackName}" was successfully created"; 
 else 
 echo "Creation failure"; 
 fi
