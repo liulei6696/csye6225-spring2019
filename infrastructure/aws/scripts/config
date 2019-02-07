@@ -1,0 +1,11 @@
+vpc_cidr_block=10.0.0.0/20
+subnet_1_cidr_block=10.0.1.0/24
+subnet_2_cidr_block=10.0.2.0/24
+subnet_3_cidr_block=10.0.3.0/24
+vpc_id=vpc-069360f793a3fd9e3
+subnet_1_id=subnet-0e9337b161e3eab7d
+subnet_2_id=subnet-0ae3c704091b93893
+subnet_3_id=subnet-04fa1c865a1cedc5a
+internet_gateway_id=igw-0f229c1495af5f9d5
+route_table_id=rtb-0cacc67ed8bcd6e70
+security_group_id=sg-0e73f7bcad9f47e09
