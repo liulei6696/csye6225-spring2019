@@ -4,7 +4,7 @@ echo "Input name of the new stack:"
 read stackName
 aws cloudformation create-stack --stack-name $stackName --template-body file://csye6225-cf-networking.yaml
 aws cloudformation wait stack-create-complete --stack-name $stackName
-b=$(aws cloudformation describe-stacks | grep -o '"StackName": *"[^"]*"' | grep -o '"[^"]*"$' | sed 's/\"//g')
+b=$(aws cloudformation describe-stacks | grep -o '"StackName": *"[^"]*"' | grep -o '"[^"]*"$' | sed 's/\"//g') | head -n 1
 if [ $b ] && [ "$b"=="$stackName" ]; 
 then 
 echo "Stack was successfully created"; 
