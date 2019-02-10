@@ -4,6 +4,7 @@
 
     <resultMap id="BaseResultMap" type="edu.neu.coe.csye6225.entity.User">
         <id column="username" jdbcType="VARCHAR" property="username" />
+        <result column="userId" jdbcType="VARCHAR" property="userId" />
         <result column="password" jdbcType="VARCHAR" property="password" />
 
     </resultMap>
@@ -22,16 +23,16 @@
         where username=#{username, jdbcType=VARCHAR}
     </select>
 
-    <update id="updateUser"  parameterType="user">
+    <update id="updateUser"  parameterType="User">
     update user
     set
     password=#{password, jdbcType=VARCHAR}
     where username=#{username, jdbcType=VARCHAR}
   </update>
 
-    <insert id="insertUser" parameterType="user">
-        insert into user(username,password)
-        values(#{username},#{password})
+    <insert id="insertUser" parameterType="User">
+        insert into user(userId,username,password)
+        values(#{userId},#{username},#{password})
     </insert>
 
     <delete id="deleteUserByUsername" parameterType="User">
