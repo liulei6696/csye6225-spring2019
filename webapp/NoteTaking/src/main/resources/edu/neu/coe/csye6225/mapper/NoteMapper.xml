@@ -35,7 +35,7 @@
     title=#{title, jdbcType=VARCHAR},
     content=#{content, jdbcType=LONGVARCHAR},
     lastModifiedTime=#{lastModifiedTime, jdbcType=TIMESTAMP}
-    where userId=#{userId, jdbcType=VARCHAR} and
+    where
     noteId=#{noteId, jdbcType=VARCHAR}
   </update>
 
@@ -45,7 +45,7 @@
     </insert>
 
     <delete id="deleteNote" parameterType="note">
-        DELETE FROM note WHERE userId=#{userId, jdbcType=VARCHAR} and
+        DELETE FROM note WHERE
         noteId=#{noteId,jdbcType=VARCHAR}
     </delete>
 
