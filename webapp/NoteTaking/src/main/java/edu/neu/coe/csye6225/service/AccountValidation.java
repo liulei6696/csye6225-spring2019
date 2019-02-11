@@ -1,5 +1,6 @@
 package edu.neu.coe.csye6225.service;
 
+import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
 
 public interface AccountValidation {
@@ -17,4 +18,6 @@ public interface AccountValidation {
 
     // Check user password correct or not
     boolean isPasswordCorrect(User user);
+
+//    boolean isNoteBelongToUser(Note note, User user);
 }

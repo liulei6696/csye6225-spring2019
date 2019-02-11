@@ -39,14 +39,6 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public List<Note> getNotes() {
-        return notes;
-    }
-
-    public void setNotes(List<Note> notes) {
-        this.notes = notes;
-    }
-
     public User(String username, String password) {
         setUserId();
         this.username = username;
@@ -60,7 +52,6 @@ public class User implements Serializable {
                 "userId='" + userId + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", notes=" + notes +
                 '}';
     }
 

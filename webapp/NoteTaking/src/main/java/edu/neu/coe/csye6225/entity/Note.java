@@ -10,24 +10,14 @@ public class Note {
     String userId;
     String title;
     String content;
-    Date createTime;
-    Date lastModifiedTime;
+    String createTime;
+    String lastModifiedTime;
 
 
 
     public Note() {
 
     }
-//
-//    //update note
-//    public Note(String noteId, String userId, String title, String content) {
-//        this.noteId = noteId;
-//        this.userId = userId;
-//        this.title = title;
-//        this.content = content;
-//        this.createTime = getCreateTime();
-//        setLastModifiedTime();
-//    }
 
     //create new note, assign note id
     public Note(String userId, String title, String content) {
@@ -72,20 +62,36 @@ public class Note {
         this.content = content;
     }
 
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime() {
-        this.createTime = new Date();
+    @Override
+    public String toString() {
+        return "{" +
+                "\"noteId\" :\"" + noteId + '\"' +
+                ",\"userId\" :\"" + userId + '\"' +
+                ",\"title\" :\"" + title + '\"' +
+                ",\"content\" :\"" + content + '\"' +
+                ",\"createTime\" :\"" + createTime + '\"' +
+                ",\"lastModifiedTime\" :\"" + lastModifiedTime + '\"' +
+                '}';
     }
 
-    public Date getLastModifiedTime() {
+    public void setCreateTime() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String createDate = df.format(new Date());
+        this.createTime = createDate;
+    }
+
+    public String getLastModifiedTime() {
         return lastModifiedTime;
     }
 
     public void setLastModifiedTime() {
-        this.lastModifiedTime = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String updateDate = df.format(new Date());
+        this.lastModifiedTime = updateDate;
     }
 
 

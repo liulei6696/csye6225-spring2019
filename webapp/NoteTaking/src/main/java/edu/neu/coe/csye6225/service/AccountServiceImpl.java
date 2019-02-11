@@ -16,7 +16,7 @@ public class AccountServiceImpl implements AccountService {
 
     // Log in
     public boolean logIn(User user) {
-        if (user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
+        if (user == null || user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
             System.out.println("Username or password cannot be empty!");
             return false;
         } else {
