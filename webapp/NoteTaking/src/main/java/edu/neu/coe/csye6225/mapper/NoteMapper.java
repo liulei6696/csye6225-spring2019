@@ -13,5 +13,5 @@ public interface NoteMapper {
     int updateNote(Note note);
     int insertNote(Note note);
     Note getNoteById(String noteId);
-    List<Note>getAllNotes(String userId);
+    List<Note>getAllNotes(String username);
 }

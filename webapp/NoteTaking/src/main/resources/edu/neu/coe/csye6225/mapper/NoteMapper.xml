@@ -4,7 +4,7 @@
 
     <resultMap id="BaseResultMap" type="edu.neu.coe.csye6225.entity.Note">
         <id column="noteId" jdbcType="VARCHAR" property="noteId" />
-        <result column="userId" jdbcType="VARCHAR" property="userId" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="title" jdbcType="VARCHAR" property="title" />
         <result column="content" jdbcType="LONGNVARCHAR" property="content" />
         <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
@@ -18,7 +18,7 @@
         *
         from note
         where
-        userId=#{userId, jdbcType=VARCHAR}
+        username=#{username, jdbcType=VARCHAR}
     </select>
 
     <select id="getNoteById" flushCache="true" parameterType="String"  resultMap="BaseResultMap">
@@ -40,8 +40,8 @@
   </update>
 
     <insert id="insertNote" parameterType="note">
-        insert into note(noteId,userId,title,content,createTime,lastModifiedTime)
-        values(#{noteId},#{userId},#{title},#{content},#{createTime},#{lastModifiedTime})
+        insert into note(noteId,username,title,content,createTime,lastModifiedTime)
+        values(#{noteId},#{username},#{title},#{content},#{createTime},#{lastModifiedTime})
     </insert>
 
     <delete id="deleteNote" parameterType="note">

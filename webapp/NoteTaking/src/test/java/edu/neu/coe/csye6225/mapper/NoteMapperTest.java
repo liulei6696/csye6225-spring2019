@@ -39,18 +39,18 @@ public class NoteMapperTest {
     @Test
     public void testGetAllNotes() {
         User user = new User(UUID.randomUUID().toString(),"bbb");
-        Note note1 = new Note(user.getUserId(),"aa","bbb");
-        Note note2 = new Note(user.getUserId(),"bb","ccc");
-        int size1 = noteMapper.getAllNotes(user.getUserId()).size();
+        Note note1 = new Note(user.getUsername(),"aa","bbb");
+        Note note2 = new Note(user.getUsername(),"bb","ccc");
+        int size1 = noteMapper.getAllNotes(user.getUsername()).size();
         noteMapper.insertNote(note1);
         noteMapper.insertNote(note2);
-        assertEquals(2+size1,noteMapper.getAllNotes(user.getUserId()).size());
+        assertEquals(2+size1,noteMapper.getAllNotes(user.getUsername()).size());
     }
 
     @Test
     public void testGetNoteByNoteId() {
         User user = new User(UUID.randomUUID().toString(),"bbb");
-        Note note = new Note(user.getUserId(),"aa","ccccc");
+        Note note = new Note(user.getUsername(),"aa","ccccc");
         noteMapper.insertNote(note);
         assertNotNull(noteMapper.getNoteById(note.getNoteId()));
     }
@@ -70,7 +70,7 @@ public class NoteMapperTest {
     @Test
     public void testInsertNote(){
         User user = new User(UUID.randomUUID().toString(),"bbb");
-        Note note1 = new Note(user.getUserId(),"aa","bbb");
+        Note note1 = new Note(user.getUsername(),"aa","bbb");
         noteMapper.insertNote(note1);
         assertNotNull(noteMapper.getNoteById(note1.getNoteId()));
     }
@@ -78,7 +78,7 @@ public class NoteMapperTest {
     @Test
     public void testDeleteNote(){
         User user = new User(UUID.randomUUID().toString(),"bbb");
-        Note note1 = new Note(user.getUserId(),"aa","bbb");
+        Note note1 = new Note(user.getUsername(),"aa","bbb");
         noteMapper.insertNote(note1);
         assertNotNull(noteMapper.getNoteById(note1.getNoteId()));
         noteMapper.deleteNote(note1);
