@@ -7,22 +7,10 @@ import java.util.UUID;
 
 public class User implements Serializable {
 
-
-    private String userId;
-
     private String username;
 
     private String password;
 
-    private List<Note>notes = new ArrayList<>();
-
-    public void setUserId() {
-        this.userId = UUID.randomUUID().toString();
-    }
-
-    public String getUserId() {
-        return userId;
-    }
     public String getUsername() {
         return username;
     }
@@ -40,7 +28,6 @@ public class User implements Serializable {
     }
 
     public User(String username, String password) {
-        setUserId();
         this.username = username;
         this.password = password;
     }
@@ -49,8 +36,7 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-                "userId='" + userId + '\'' +
-                ", username='" + username + '\'' +
+                "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

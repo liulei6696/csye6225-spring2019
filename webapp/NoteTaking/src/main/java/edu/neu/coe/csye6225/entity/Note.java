@@ -7,7 +7,7 @@ import java.util.UUID;
 public class Note {
 
     String noteId;
-    String userId;
+    String username;
     String title;
     String content;
     String createTime;
@@ -22,7 +22,7 @@ public class Note {
     //create new note, assign note id
     public Note(String userId, String title, String content) {
         setNoteId();
-        this.userId = userId;
+        this.username = userId;
         this.title = title;
         this.content = content;
         setCreateTime();
@@ -39,11 +39,11 @@ public class Note {
     }
 
     public String getUserId() {
-        return userId;
+        return username;
     }
 
     public void setUserId(String userId) {
-        this.userId = userId;
+        this.username = userId;
     }
 
     public String getTitle() {
@@ -70,7 +70,7 @@ public class Note {
     public String toString() {
         return "{" +
                 "\"noteId\" :\"" + noteId + '\"' +
-                ",\"userId\" :\"" + userId + '\"' +
+                ",\"username\" :\"" + username + '\"' +
                 ",\"title\" :\"" + title + '\"' +
                 ",\"content\" :\"" + content + '\"' +
                 ",\"createTime\" :\"" + createTime + '\"' +

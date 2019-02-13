@@ -22,7 +22,7 @@ public class NoteServiceImpl implements NoteService{
 
     @Override
     public Note createNote(User user) {
-        Note note = new Note(user.getUserId(), "Title of the note", "Content of the note");
+        Note note = new Note(user.getUsername(), "Title of the note", "Content of the note");
         noteMapper.insertNote(note);
         System.out.println("Note created for user: " + user.getUsername());
         return note;
@@ -32,7 +32,7 @@ public class NoteServiceImpl implements NoteService{
     public boolean deleteNote(User user, String noteId) {
         Note note = noteMapper.getNoteById(noteId);
         String noteUserId = note.getUserId();
-        if (user.getUserId().equals(noteUserId)) {
+        if (user.getUsername().equals(noteUserId)) {
             if(noteMapper.deleteNote(note)) {
                 System.out.println("Note deleted!");
                 return true;
@@ -54,7 +54,7 @@ public class NoteServiceImpl implements NoteService{
             return null;
         }
         String noteUserId = note.getUserId();
-        if (user.getUserId().equals(noteUserId)) {
+        if (user.getUsername().equals(noteUserId)) {
             note.setLastModifiedTime();
             if(noteMapper.updateNote(note) > 0) {
                 System.out.println("Note updated!");
@@ -73,7 +73,7 @@ public class NoteServiceImpl implements NoteService{
     public Note getNoteById(User user,String noteId) {
         Note note = new Note();
         String noteUserId = noteMapper.getNoteById(noteId).getUserId();
-        if (user.getUserId().equals(noteUserId)) {
+        if (user.getUsername().equals(noteUserId)) {
             note = noteMapper.getNoteById(noteId);
             System.out.println("Get note successfully!");
         } else {
@@ -87,7 +87,7 @@ public class NoteServiceImpl implements NoteService{
     @Override
     public List<Note> getAllNotes(User user) {
         List<Note> noteList = new ArrayList<>();
-            noteList = noteMapper.getAllNotes(user.getUserId());
+            noteList = noteMapper.getAllNotes(user.getUsername());
         return noteList;
     }
 }
