@@ -33,7 +33,7 @@ public class NoteController {
     public ResponseEntity<String> getAllNotes(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         String auth = httpServletRequest.getHeader("Authorization");
         User user = UserVerification.addVerification(auth);
-        ResultJson resultJson = new ResultJson();
+        JSONObject resultJson = new JSONObject();
         if (user == null) {
             httpServletResponse.setStatus(SC_UNAUTHORIZED);
             httpServletResponse.sendError(SC_UNAUTHORIZED, "Login failure! The username or password is wrong");
@@ -78,7 +78,7 @@ public class NoteController {
     public ResponseEntity<String> getNoteById(@PathVariable("id") String noteId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         String auth = httpServletRequest.getHeader("Authorization");
         User user = UserVerification.addVerification(auth);
-        ResultJson resultJson = new ResultJson();
+        JSONObject resultJson = new JSONObject();
         if (user == null) {
             httpServletResponse.setStatus(SC_UNAUTHORIZED);
             httpServletResponse.sendError(SC_UNAUTHORIZED, "Login failure! The username or password is wrong");
@@ -114,7 +114,7 @@ public class NoteController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/note")
     public ResponseEntity<String> createNote(@RequestBody User user) {
-        ResultJson resultJson = new ResultJson();
+        JSONObject resultJson = new JSONObject();
         if (accountService.logIn(user)) {
             Note note = noteService.createNote(user);
             JSONArray array= JSONArray.fromObject(note);
@@ -134,7 +134,7 @@ public class NoteController {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/note/{id}")
     public ResponseEntity<String> updateNote(@RequestBody User user, @PathVariable("id") String noteId) {
-        ResultJson resultJson = new ResultJson();
+        JSONObject resultJson = new JSONObject();
         if (accountService.logIn(user)) {
             Note note = noteService.getNoteById(user, noteId);
             if (note != null) {
@@ -161,7 +161,7 @@ public class NoteController {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/note/{id}")
     public ResponseEntity<String> deleteNote(@RequestBody User user, @PathVariable("id") String noteId) {
-        ResultJson resultJson = new ResultJson();
+        JSONObject resultJson = new JSONObject();
         if (accountService.logIn(user)) {
             if (noteService.deleteNote(user, noteId)) {
                 resultJson.put("status", String.valueOf(HttpStatus.NO_CONTENT));
