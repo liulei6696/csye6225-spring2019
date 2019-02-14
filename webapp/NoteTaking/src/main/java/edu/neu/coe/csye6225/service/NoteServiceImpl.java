@@ -23,9 +23,10 @@ public class NoteServiceImpl implements NoteService{
     @Override
     public Note createNote(User user) {
         Note note = new Note(user.getUsername(), "Title of the note", "Content of the note");
-        noteMapper.insertNote(note);
-        System.out.println("Note created for user: " + user.getUsername());
-        return note;
+        if(noteMapper.insertNote(note) > 0) {
+            System.out.println("Note created for user: " + user.getUsername());
+            return note;
+        } else return null;
     }
 
     @Override
@@ -54,8 +55,8 @@ public class NoteServiceImpl implements NoteService{
             System.out.println("Please specify the note you want to update!");
             return null;
         }
-        String noteUserId = note.getUserId();
-        if (user.getUsername().equals(noteUserId)) {
+        Note realNote = noteMapper.getNoteById(note.getNoteId());
+        if (user.getUsername().equals(realNote.getUserId())) {
             note.setLastModifiedTime();
             if(noteMapper.updateNote(note) > 0) {
                 System.out.println("Note updated!");
