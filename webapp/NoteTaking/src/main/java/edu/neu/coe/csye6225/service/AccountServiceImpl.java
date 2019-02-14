@@ -22,17 +22,16 @@ public class AccountServiceImpl implements AccountService {
         } else {
             // User exists and password correct
             if (accountValidation.isUserRegistered(user)) {
-                System.out.println("User: '" + user.getUsername() + "' exists!");
                 if (accountValidation.isPasswordCorrect(user)) {
                     System.out.println("User: '" + user.getUsername() + "' logged in!");
                     return true;
                 } else {
-                    System.out.println("Wrong Password!");
+                    System.out.println("Wrong username or password!");
                     return false;
                 }
 
             } else {
-                System.out.println("User does not exists!");
+                System.out.println("Wrong username or password!");
                 return false;
             }
         }

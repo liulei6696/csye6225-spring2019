@@ -31,6 +31,7 @@ public class NoteServiceImpl implements NoteService{
     @Override
     public boolean deleteNote(User user, String noteId) {
         Note note = noteMapper.getNoteById(noteId);
+        if (note == null) return false;
         String noteUserId = note.getUserId();
         if (user.getUsername().equals(noteUserId)) {
             if(noteMapper.deleteNote(note)) {
@@ -71,15 +72,18 @@ public class NoteServiceImpl implements NoteService{
 
     @Override
     public Note getNoteById(User user,String noteId) {
-        Note note = new Note();
-        String noteUserId = noteMapper.getNoteById(noteId).getUserId();
+        Note note = noteMapper.getNoteById(noteId);
+        if (note == null) return note;
+        String noteUserId = note.getUserId();
         if (user.getUsername().equals(noteUserId)) {
             note = noteMapper.getNoteById(noteId);
             System.out.println("Get note successfully!");
+            return note;
         } else {
             System.out.println("No authorization to this note! Fail to get!");
+            return null;
         }
-        return note;
+
 
     }
 

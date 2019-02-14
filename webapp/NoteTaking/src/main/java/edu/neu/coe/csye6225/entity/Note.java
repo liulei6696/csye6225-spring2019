@@ -68,13 +68,13 @@ public class Note {
 
     @Override
     public String toString() {
-        return "{" +
-                "\"noteId\" :\"" + noteId + '\"' +
-                ",\"username\" :\"" + username + '\"' +
-                ",\"title\" :\"" + title + '\"' +
-                ",\"content\" :\"" + content + '\"' +
-                ",\"createTime\" :\"" + createTime + '\"' +
-                ",\"lastModifiedTime\" :\"" + lastModifiedTime + '\"' +
+        return "Note{" +
+                "noteId:\"" + noteId + '\"' +
+                ", username:\"" + username + '\"' +
+                ", title:\"" + title + '\"' +
+                ", content:\"" + content + '\"' +
+                ", createTime:\"" + createTime + '\"' +
+                ", lastModifiedTime:\"" + lastModifiedTime + '\"' +
                 '}';
     }
 
@@ -93,6 +93,10 @@ public class Note {
         String updateDate = df.format(new Date());
         this.lastModifiedTime = updateDate;
     }
+
+//    public void setLastModifiedTime(String message) {
+//        this.lastModifiedTime = message;
+//    }
 
 
 }

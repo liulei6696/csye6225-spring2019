@@ -1,5 +1,6 @@
 package edu.neu.coe.csye6225;
 
+import edu.neu.coe.csye6225.entity.Note;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
