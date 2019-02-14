@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /** 
@@ -39,6 +40,7 @@ public void after() throws Exception {
 * 
 */ 
 @Test
+@Transactional
 public void testLogIn() throws Exception {
     User user = new User();
     user.setUsername("xxs1990@qq.com");
@@ -59,6 +61,7 @@ public void testLogIn() throws Exception {
 * 
 */ 
 @Test
+@Transactional
 public void testSignUp() throws Exception { 
 //TODO: Test goes here...
     User user = new User();

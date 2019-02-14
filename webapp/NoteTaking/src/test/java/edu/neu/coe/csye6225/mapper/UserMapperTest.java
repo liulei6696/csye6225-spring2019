@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -31,6 +32,7 @@ public class UserMapperTest {
 
 
     @Test
+    @Transactional
     public void testGetAllUsers() {
         User user1 = new User(UUID.randomUUID().toString(),"bbbb");
         User user2 = new User(UUID.randomUUID().toString(),"cccc");
@@ -41,6 +43,7 @@ public class UserMapperTest {
     }
 
     @Test
+    @Transactional
     public void testGetUserByUsername() {
         User user = new User(UUID.randomUUID().toString(),"bbb");
         userMapper.insertUser(user);
@@ -48,6 +51,7 @@ public class UserMapperTest {
     }
 
     @Test
+    @Transactional
     public void testUpdateUser(){
         User user = new User(UUID.randomUUID().toString(),"bbb");
         userMapper.insertUser(user);
@@ -58,6 +62,7 @@ public class UserMapperTest {
 
 
     @Test
+    @Transactional
     public void testInsertUser(){
         User user = new User(UUID.randomUUID().toString(),"bbb");
         assertNull(userMapper.getUserByUsername(user.getUsername()));
@@ -66,6 +71,7 @@ public class UserMapperTest {
     }
 
     @Test
+    @Transactional
     public void testDeleteUserByUsername(){
         User user = new User(UUID.randomUUID().toString(),"bbb");
         userMapper.insertUser(user);

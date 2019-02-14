@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -37,6 +38,7 @@ public class NoteMapperTest {
 
 
     @Test
+    @Transactional
     public void testGetAllNotes() {
         User user = new User(UUID.randomUUID().toString(),"bbb");
         Note note1 = new Note(user.getUsername(),"aa","bbb");
@@ -48,6 +50,7 @@ public class NoteMapperTest {
     }
 
     @Test
+    @Transactional
     public void testGetNoteByNoteId() {
         User user = new User(UUID.randomUUID().toString(),"bbb");
         Note note = new Note(user.getUsername(),"aa","ccccc");
@@ -56,6 +59,7 @@ public class NoteMapperTest {
     }
 
     @Test
+    @Transactional
     public void testUpdateNote(){
         String uid = UUID.randomUUID().toString();
         Note note = new Note(uid,"title","content");
@@ -68,6 +72,7 @@ public class NoteMapperTest {
 
 
     @Test
+    @Transactional
     public void testInsertNote(){
         User user = new User(UUID.randomUUID().toString(),"bbb");
         Note note1 = new Note(user.getUsername(),"aa","bbb");
@@ -76,6 +81,7 @@ public class NoteMapperTest {
     }
 
     @Test
+    @Transactional
     public void testDeleteNote(){
         User user = new User(UUID.randomUUID().toString(),"bbb");
         Note note1 = new Note(user.getUsername(),"aa","bbb");

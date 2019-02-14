@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.*;
 
@@ -44,6 +45,7 @@ public class AccountValidationImplTest {
     }
 
     @Test
+    @Transactional
     public void isUserRegistered() {
         User user = new User();
         user.setUsername("12345777@qq.com");
@@ -57,10 +59,14 @@ public class AccountValidationImplTest {
     }
 
     @Test
+    @Transactional
     public void isPasswordCorrect() {
         User user = new User();
         user.setUsername("12345777@qq.com");
+        if(userMapper.getUserByUsername(user.getUsername())!=null)
+            userMapper.deleteUserByUsername(user.getUsername());
         user.setPassword("123@#$qer");
+        accountService.signUp(user);
         assertTrue(accountValidation.isPasswordCorrect(user));
         user.setPassword("123@qqq");
         assertFalse(accountValidation.isPasswordCorrect(user));
