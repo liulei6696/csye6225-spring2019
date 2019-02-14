@@ -1,8 +1,12 @@
 package edu.neu.coe.csye6225.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class User implements Serializable {
+
     private String username;
 
     private String password;
@@ -28,9 +32,6 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public User() {
-
-    }
 
     @Override
     public String toString() {
@@ -39,4 +40,10 @@ public class User implements Serializable {
                 ", password='" + password + '\'' +
                 '}';
     }
+
+    public User() {
+
+    }
+
+
 }

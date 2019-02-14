@@ -1,11 +1,13 @@
 package edu.neu.coe.csye6225.service;
 
 import edu.neu.coe.csye6225.entity.User;
+import edu.neu.coe.csye6225.mapper.UserMapper;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /** 
@@ -21,6 +23,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class AccountServiceImplTest {
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private UserMapper userMapper;
 
 @Before
 public void before() throws Exception { 
@@ -36,12 +40,16 @@ public void after() throws Exception {
 * 
 */ 
 @Test
+@Transactional
 public void testLogIn() throws Exception {
     User user = new User();
     user.setUsername("xxs1990@qq.com");
     user.setPassword("123!@zxc");
+    if(userMapper.getUserByUsername(user.getUsername())==null)
+        accountService.signUp(user);
    //Assert.assertTrue(accountService.signUp(user));
     Assert.assertTrue(accountService.logIn(user));
+
 
 
 
@@ -53,6 +61,7 @@ public void testLogIn() throws Exception {
 * 
 */ 
 @Test
+@Transactional
 public void testSignUp() throws Exception { 
 //TODO: Test goes here...
     User user = new User();
@@ -62,8 +71,10 @@ public void testSignUp() throws Exception {
     user.setUsername("zzzzzz");
     Assert.assertFalse(accountService.signUp(user)); //username must be in email format
     user.setUsername("xxs1992@qq.com");
+    if(userMapper.getUserByUsername(user.getUsername())!=null)
+        userMapper.deleteUserByUsername(user.getUsername());
     Assert.assertTrue(accountService.signUp(user));  //sign up successfully
-    user.setUsername("xxs199@qq.com");    //user has registered. Log in!
+    user.setUsername(user.getUsername());    //user has registered. Log in!
     Assert.assertFalse(accountService.signUp(user));
 
 

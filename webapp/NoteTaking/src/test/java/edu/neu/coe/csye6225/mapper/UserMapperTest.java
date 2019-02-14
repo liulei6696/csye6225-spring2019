@@ -1,133 +1,83 @@
 package edu.neu.coe.csye6225.mapper;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import static org.junit.Assert.*;
 import edu.neu.coe.csye6225.entity.User;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
+import java.util.UUID;
 
+
+@SpringBootTest
+@RunWith(SpringJUnit4ClassRunner.class)
 public class UserMapperTest {
-    private static SqlSessionFactory sqlSessionFactory;
+    @Autowired
+    private UserMapper userMapper;
 
-    @BeforeClass
-    public static void init() {
-        try {
-            Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
-            sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Before
+    public void before() throws Exception {
+    }
+
+    @After
+    public void after() throws Exception {
     }
 
 
     @Test
+    @Transactional
     public void testGetAllUsers() {
-        SqlSession sqlSession = null;
-        try {
-            sqlSession = sqlSessionFactory.openSession();
-
-            List<User> users = sqlSession.selectList("getAllUsers");
-            Assert.assertNotNull(users);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (sqlSession != null) {
-                sqlSession.close();
-            }
-        }
+        User user1 = new User(UUID.randomUUID().toString(),"bbbb");
+        User user2 = new User(UUID.randomUUID().toString(),"cccc");
+        int size1 = userMapper.getAllUsers().size();
+        userMapper.insertUser(user1);
+        userMapper.insertUser(user2);
+        assertEquals(size1+2,userMapper.getAllUsers().size());
     }
 
     @Test
+    @Transactional
     public void testGetUserByUsername() {
-
-        SqlSession sqlSession = null;
-        try {
-            sqlSession = sqlSessionFactory.openSession();
-
-            UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
-            User user = userMapper.getUserByUsername("aaa");
-            Assert.assertNotNull(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (sqlSession != null) {
-                sqlSession.close();
-            }
-        }
+        User user = new User(UUID.randomUUID().toString(),"bbb");
+        userMapper.insertUser(user);
+        assertNotNull(userMapper.getUserByUsername(user.getUsername()));
     }
 
     @Test
+    @Transactional
     public void testUpdateUser(){
-        SqlSession sqlSession = null;
-        try {
-            sqlSession = sqlSessionFactory.openSession();
-
-            UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
-            User user = userMapper.getUserByUsername("aaa");
-            Assert.assertNotEquals("1234@qqx",user.getPassword());
-            user.setPassword("1234@qqx");
-            userMapper.updateUser(user);
-            Assert.assertEquals("1234@qqx",userMapper.getUserByUsername("aaa").getPassword());
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (sqlSession != null) {
-                sqlSession.close();
-            }
-        }
+        User user = new User(UUID.randomUUID().toString(),"bbb");
+        userMapper.insertUser(user);
+        user.setPassword("ccc");
+        userMapper.updateUser(user);
+        assertNotEquals("bbb",userMapper.getUserByUsername(user.getUsername()).getPassword());
     }
 
 
     @Test
+    @Transactional
     public void testInsertUser(){
-        SqlSession sqlSession = null;
-        try {
-            sqlSession = sqlSessionFactory.openSession();
-
-            UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
-            User user = new User();
-            user.setUsername("123@qq.com");
-            user.setPassword("123!@#zxc");
-            userMapper.insertUser(user);
-            Assert.assertEquals(user.getPassword(),userMapper.getUserByUsername(user.getUsername()).getPassword());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (sqlSession != null) {
-                sqlSession.close();
-            }
-        }
+        User user = new User(UUID.randomUUID().toString(),"bbb");
+        assertNull(userMapper.getUserByUsername(user.getUsername()));
+        userMapper.insertUser(user);
+        assertNotNull(userMapper.getUserByUsername(user.getUsername()));
     }
 
     @Test
+    @Transactional
     public void testDeleteUserByUsername(){
-        SqlSession sqlSession = null;
-        try {
-            sqlSession = sqlSessionFactory.openSession();
-
-            UserMapper userMapper = (UserMapper) sqlSession.getMapper(UserMapper.class);
-            Assert.assertNotNull(userMapper.getUserByUsername("zzy"));
-            userMapper.deleteUserByUsername("zzy");
-            Assert.assertNull(userMapper.getUserByUsername("zzy"));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (sqlSession != null) {
-                sqlSession.close();
-            }
-        }
+        User user = new User(UUID.randomUUID().toString(),"bbb");
+        userMapper.insertUser(user);
+        assertNotNull(userMapper.getUserByUsername(user.getUsername()));
+        userMapper.deleteUserByUsername(user.getUsername());
+        assertNull(userMapper.getUserByUsername(user.getUsername()));
     }
 
 }

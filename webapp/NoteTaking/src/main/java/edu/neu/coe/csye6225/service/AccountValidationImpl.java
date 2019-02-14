@@ -1,5 +1,6 @@
 package edu.neu.coe.csye6225.service;
 
+import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.mapper.UserMapper;
 import org.mindrot.jbcrypt.BCrypt;
@@ -64,4 +65,15 @@ public class AccountValidationImpl implements AccountValidation {
         else
             return false;
     }
+
+//    @Override
+//    public boolean isNoteBelongToUser(Note note, User user) {
+//        //TODO User.getId
+//        if(note == null || user == null || note.getUserId() == null)
+//            return false;
+//        if (note.getUserId().equals(user.getId())) {
+//            return true;
+//        }
+//        return false;
+//    }
 }

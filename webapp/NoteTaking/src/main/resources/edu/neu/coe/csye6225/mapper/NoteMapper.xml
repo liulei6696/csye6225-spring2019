@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.neu.coe.csye6225.mapper.NoteMapper">
+
+    <resultMap id="BaseResultMap" type="edu.neu.coe.csye6225.entity.Note">
+        <id column="noteId" jdbcType="VARCHAR" property="noteId" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="content" jdbcType="LONGNVARCHAR" property="content" />
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="lastModifiedTime" jdbcType="TIMESTAMP" property="lastModifiedTime" />
+
+    </resultMap>
+
+
+    <select id="getAllNotes"  parameterType="String" resultMap="BaseResultMap">
+        select
+        *
+        from note
+        where
+        username=#{username, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getNoteById" flushCache="true" parameterType="String"  resultMap="BaseResultMap">
+        select
+        *
+        from note
+        where
+        noteId=#{noteId, jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateNote"  parameterType="Note">
+    update note
+    set
+    title=#{title, jdbcType=VARCHAR},
+    content=#{content, jdbcType=LONGVARCHAR},
+    lastModifiedTime=#{lastModifiedTime, jdbcType=TIMESTAMP}
+    where
+    noteId=#{noteId, jdbcType=VARCHAR}
+  </update>
+
+    <insert id="insertNote" parameterType="note">
+        insert into note(noteId,username,title,content,createTime,lastModifiedTime)
+        values(#{noteId},#{username},#{title},#{content},#{createTime},#{lastModifiedTime})
+    </insert>
+
+    <delete id="deleteNote" parameterType="note">
+        DELETE FROM note WHERE
+        noteId=#{noteId,jdbcType=VARCHAR}
+    </delete>
+
+</mapper>

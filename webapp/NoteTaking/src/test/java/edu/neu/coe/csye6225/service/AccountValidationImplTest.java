@@ -1,12 +1,14 @@
 package edu.neu.coe.csye6225.service;
 
 import edu.neu.coe.csye6225.entity.User;
+import edu.neu.coe.csye6225.mapper.UserMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.*;
 
@@ -19,6 +21,8 @@ public class AccountValidationImplTest {
     private AccountValidation accountValidation;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private UserMapper userMapper;
 
     @Test
     public void nameValidation() {
@@ -41,10 +45,13 @@ public class AccountValidationImplTest {
     }
 
     @Test
+    @Transactional
     public void isUserRegistered() {
         User user = new User();
         user.setUsername("12345777@qq.com");
         user.setPassword("123@#$qer");
+        if(userMapper.getUserByUsername(user.getUsername())!=null)
+            userMapper.deleteUserByUsername(user.getUsername());
         assertFalse(accountValidation.isUserRegistered(user));
         accountService.signUp(user);
         assertTrue(accountValidation.isUserRegistered(user));
@@ -52,10 +59,14 @@ public class AccountValidationImplTest {
     }
 
     @Test
+    @Transactional
     public void isPasswordCorrect() {
         User user = new User();
         user.setUsername("12345777@qq.com");
+        if(userMapper.getUserByUsername(user.getUsername())!=null)
+            userMapper.deleteUserByUsername(user.getUsername());
         user.setPassword("123@#$qer");
+        accountService.signUp(user);
         assertTrue(accountValidation.isPasswordCorrect(user));
         user.setPassword("123@qqq");
         assertFalse(accountValidation.isPasswordCorrect(user));

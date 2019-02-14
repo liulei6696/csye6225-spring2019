@@ -4,10 +4,11 @@ import edu.neu.coe.csye6225.entity.User;
 
 import java.util.Base64;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 public class UserVerification {
     public static User addVerification(String auth) {
-        if (auth.isEmpty())
+        if (StringUtils.isBlank(auth) || StringUtils.isEmpty(auth))
             return null;
         String basic = "Basic";
         if (!auth.contains(basic))
