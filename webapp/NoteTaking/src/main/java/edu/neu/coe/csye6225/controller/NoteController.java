@@ -95,7 +95,7 @@ public class NoteController {
                         .body(resultJson.toString());
             } else {
                 resultJson.put("status", String.valueOf(HttpStatus.OK));
-                resultJson.put("Note", note.toString());
+                resultJson.put("Note", note);
                 return ResponseEntity.ok()
                         .body(resultJson.toString());
             }
@@ -113,8 +113,18 @@ public class NoteController {
 
 
     @RequestMapping(method = RequestMethod.POST, value = "/note")
-    public ResponseEntity<String> createNote(@RequestBody User user) {
+    public ResponseEntity<String> createNote(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+        String auth = httpServletRequest.getHeader("Authorization");
+        User user = UserVerification.addVerification(auth);
         JSONObject resultJson = new JSONObject();
+        if (user == null) {
+            httpServletResponse.setStatus(SC_UNAUTHORIZED);
+            httpServletResponse.sendError(SC_UNAUTHORIZED, "Login failure! The username or password is wrong");
+            resultJson.put("status", String.valueOf(HttpStatus.UNAUTHORIZED));
+            resultJson.put("message", "Login failure! The username or password is wrong");
+            return ResponseEntity.badRequest()
+                    .body(resultJson.toString());
+        }
         if (accountService.logIn(user)) {
             Note note = noteService.createNote(user);
             JSONArray array= JSONArray.fromObject(note);
@@ -133,12 +143,22 @@ public class NoteController {
 
 
     @RequestMapping(method = RequestMethod.PUT, value = "/note/{id}")
-    public ResponseEntity<String> updateNote(@RequestBody User user, @PathVariable("id") String noteId) {
+    public ResponseEntity<String> updateNote(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PathVariable("id") String noteId, @RequestBody Note updatedNote) throws IOException{
+        String auth = httpServletRequest.getHeader("Authorization");
+        User user = UserVerification.addVerification(auth);
         JSONObject resultJson = new JSONObject();
+        if (user == null) {
+            httpServletResponse.setStatus(SC_UNAUTHORIZED);
+            httpServletResponse.sendError(SC_UNAUTHORIZED, "Login failure! The username or password is wrong");
+            resultJson.put("status", String.valueOf(HttpStatus.UNAUTHORIZED));
+            resultJson.put("message", "Login failure! The username or password is wrong");
+            return ResponseEntity.badRequest()
+                    .body(resultJson.toString());
+        }
         if (accountService.logIn(user)) {
             Note note = noteService.getNoteById(user, noteId);
             if (note != null) {
-                Note updatedNote = noteService.updateNote(user, note);
+                noteService.updateNote(user, updatedNote);
                 resultJson.put("status", String.valueOf(HttpStatus.NO_CONTENT));
 //                resultJson.put("note", updatedNote.toString());
 //                resultJson.put("message", "Note updated success");
@@ -160,8 +180,18 @@ public class NoteController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/note/{id}")
-    public ResponseEntity<String> deleteNote(@RequestBody User user, @PathVariable("id") String noteId) {
+    public ResponseEntity<String> deleteNote(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PathVariable("id") String noteId) throws IOException {
+        String auth = httpServletRequest.getHeader("Authorization");
+        User user = UserVerification.addVerification(auth);
         JSONObject resultJson = new JSONObject();
+        if (user == null) {
+            httpServletResponse.setStatus(SC_UNAUTHORIZED);
+            httpServletResponse.sendError(SC_UNAUTHORIZED, "Login failure! The username or password is wrong");
+            resultJson.put("status", String.valueOf(HttpStatus.UNAUTHORIZED));
+            resultJson.put("message", "Login failure! The username or password is wrong");
+            return ResponseEntity.badRequest()
+                    .body(resultJson.toString());
+        }
         if (accountService.logIn(user)) {
             if (noteService.deleteNote(user, noteId)) {
                 resultJson.put("status", String.valueOf(HttpStatus.NO_CONTENT));
