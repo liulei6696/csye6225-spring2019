@@ -127,14 +127,14 @@ aws ec2 authorize-security-group-ingress --group-id ${security_group_id} --proto
 echo "added rules that allow TCP traffic from anywhere"
 
 # write to config file
-echo "vpc_cidr_block=${vpc_cidr_block}" > config
-echo "subnet_1_cidr_block=${subnet_1_cidr_block}" >> config
-echo "subnet_2_cidr_block=${subnet_2_cidr_block}" >> config
-echo "subnet_3_cidr_block=${subnet_3_cidr_block}" >> config
-echo "vpc_id=${vpc_id}" >> config
-echo "subnet_1_id=${subnet_1_id}" >> config
-echo "subnet_2_id=${subnet_2_id}" >> config
-echo "subnet_3_id=${subnet_3_id}" >> config
-echo "internet_gateway_id=${internet_gateway_id}" >> config
-echo "route_table_id=${route_table_id}" >> config
-echo "security_group_id=${security_group_id}" >> config
+#echo "vpc_cidr_block=${vpc_cidr_block}" > config
+#echo "subnet_1_cidr_block=${subnet_1_cidr_block}" >> config
+#echo "subnet_2_cidr_block=${subnet_2_cidr_block}" >> config
+#echo "subnet_3_cidr_block=${subnet_3_cidr_block}" >> config
+#echo "vpc_id=${vpc_id}" >> config
+#echo "subnet_1_id=${subnet_1_id}" >> config
+#echo "subnet_2_id=${subnet_2_id}" >> config
+#echo "subnet_3_id=${subnet_3_id}" >> config
+#echo "internet_gateway_id=${internet_gateway_id}" >> config
+#echo "route_table_id=${route_table_id}" >> config
+#echo "security_group_id=${security_group_id}" >> config
