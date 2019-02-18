@@ -1,5 +1,9 @@
 package edu.neu.coe.csye6225.service;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.model.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,12 +30,32 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService{
     private AmazonS3 amazonS3;
     private static final Logger logger = LoggerFactory.getLogger(AmazonS3ClientServiceImpl.class);
 
+//    @Autowired
+//    public AmazonS3ClientServiceImpl(Region awsRegion,  AWSCredentialsProvider awsCredentialsProvider, String awsS3AudioBucket)
+//    {
+//        this.amazonS3 = AmazonS3ClientBuilder.standard()
+//                .withCredentials(awsCredentialsProvider)
+//                .withRegion(awsRegion.getName()).build();
+//        this.awsS3AudioBucket = awsS3AudioBucket;
+//    }
+
     @Autowired
-    public AmazonS3ClientServiceImpl(Region awsRegion, AWSCredentialsProvider awsCredentialsProvider, String awsS3AudioBucket)
-    {
+    public AmazonS3ClientServiceImpl(Region awsRegion, String awsS3AudioBucket){
+        AWSCredentials credentials = null;
+        try {
+            credentials = new ProfileCredentialsProvider().getCredentials();
+        } catch (Exception e) {
+            throw new AmazonClientException(
+                    "Cannot load the credentials from the credential profiles file. " +
+                            "Please make sure that your credentials file is at the correct " +
+                            "location (~/.aws/credentials), and is in valid format.",
+                    e);
+        }
+        String key = credentials.getAWSSecretKey();
+        String aKey = credentials.getAWSAccessKeyId();
         this.amazonS3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(awsCredentialsProvider)
-                .withRegion(awsRegion.getName()).build();
+                .withCredentials(new ProfileCredentialsProvider())
+                .build();
         this.awsS3AudioBucket = awsS3AudioBucket;
     }
 
