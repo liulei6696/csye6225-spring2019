@@ -2,6 +2,7 @@ package edu.neu.coe.csye6225.util;
 
 import org.json.JSONObject;
 
+@Deprecated
 public class ResultJson {
 
     private JSONObject jsonObject;
