@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.neu.coe.csye6225.mapper.AttachmentMapper">
+
+    <resultMap id="BaseResultMap" type="edu.neu.coe.csye6225.entity.Attachment">
+        <id column="attachmentId" jdbcType="VARCHAR" property="attachmentId" />
+        <result column="noteId" jdbcType="VARCHAR" property="noteId" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="owner" jdbcType="VARCHAR" property="owner" />
+        <result column="lastModifiedTime" jdbcType="TIMESTAMP" property="lastModifiedTime" />
+        <result column="eTag" jdbcType="VARCHAR" property="eTag" />
+        <result column="storageClass" jdbcType="VARCHAR" property="storageClass" />
+        <result column="serverSideEncryption" jdbcType="VARCHAR" property="serverSideEncryption" />
+        <result column="fileSize" jdbcType="DOUBLE" property="fileSize" />
+        <result column="fileKey" jdbcType="DOUBLE" property="fileKey" />
+
+    </resultMap>
+
+    <insert id="insertAttachment" parameterType="attachment">
+        insert into attachment(attachmentId,noteId,url,owner,lastModifiedTime,eTag,storageClass,serverSideEncryption,fileSize,fileKey)
+        values(#{attachmentId},#{noteId},#{url},#{owner},#{lastModifiedTime},#{eTag},#{storageClass},#{serverSideEncryption},#{fileSize},#{fileKey})
+    </insert>
+
+    <delete id="deleteAttachment" parameterType="attachment">
+        DELETE FROM attachment WHERE
+        attachmentId=#{attachmentId,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="getAllNotes"  parameterType="String" resultMap="BaseResultMap">
+        select
+        *
+        from attachment
+        where
+        noteId=#{noteId, jdbcType=VARCHAR}
+    </select>
+
+</mapper>
