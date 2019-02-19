@@ -1,6 +1,7 @@
 package edu.neu.coe.csye6225.controller;
 import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
+import edu.neu.coe.csye6225.mapper.NoteMapper;
 import edu.neu.coe.csye6225.service.AmazonS3ClientService;
 import edu.neu.coe.csye6225.service.UserVerification;
 import edu.neu.coe.csye6225.util.QuickResponse;
@@ -23,11 +24,13 @@ public class AttachmentController {
 
     @Autowired
     private AmazonS3ClientService amazonS3ClientService;
+    @Autowired
+    private NoteMapper noteMapper;
 
     @PostMapping
     public Map<String, String> uploadFile(@RequestPart(value = "file") MultipartFile file)
     {
-        this.amazonS3ClientService.createAttachmentToS3Bucket(file, true);
+        this.amazonS3ClientService.createAttachmentToS3Bucket(new Note(),file, true);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "file [" + file.getOriginalFilename() + "] uploading request submitted successfully.");
@@ -39,7 +42,7 @@ public class AttachmentController {
     @DeleteMapping
     public Map<String, String> deleteFile(@RequestParam("file_name") String fileName)
     {
-        this.amazonS3ClientService.deleteAttachmentFromS3Bucket(fileName);
+        this.amazonS3ClientService.deleteAttachmentFromS3Bucket(new Note(),fileName);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "file [" + fileName + "] removing request submitted successfully.");

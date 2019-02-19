@@ -24,12 +24,20 @@
         attachmentId=#{attachmentId,jdbcType=VARCHAR}
     </delete>
 
-    <select id="getAllNotes"  parameterType="String" resultMap="BaseResultMap">
+    <select id="getAllAttachment"  parameterType="String" resultMap="BaseResultMap">
         select
         *
         from attachment
         where
-        noteId=#{noteId, jdbcType=VARCHAR}
+        attachmentId=#{attachmentId, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getAttachmentById" flushCache="true" parameterType="String"  resultMap="BaseResultMap">
+        select
+        *
+        from attachment
+        where
+        attachmentId=#{attachmentId, jdbcType=VARCHAR}
     </select>
 
 </mapper>

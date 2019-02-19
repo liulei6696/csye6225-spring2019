@@ -16,7 +16,7 @@ public class Note {
 
 
     public Note() {
-
+        this.noteId = UUID.randomUUID().toString();
     }
 
     //create new note, assign note id
