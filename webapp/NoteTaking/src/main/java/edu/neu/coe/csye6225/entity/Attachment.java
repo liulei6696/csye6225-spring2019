@@ -6,28 +6,23 @@ public class Attachment {
     private String attachmentId;
     private String noteId;
     private String url;
-    private String owner;
-    private String lastModifiedTime;
+    private Long fileSize;
+    private String fileType;
+    private String fileName;
     private String eTag;
-    private String storageClass;
-    private String serverSideEncryption;
-    private Double fileSize;
-    private String fileKey;
+
 
     public Attachment() {
     }
 
-    public Attachment(String noteId, String url, String owner, String lastModifiedTime, String eTag, String storageClass, String serverSideEncryption, Double fileSize, String fileKey) {
-        setAttachmentId();
+    public Attachment(String noteId, String url, Long fileSize, String fileType, String fileName, String eTag) {
         this.noteId = noteId;
         this.url = url;
-        this.owner = owner;
-        this.lastModifiedTime = lastModifiedTime;
-        this.eTag = eTag;
-        this.storageClass = storageClass;
-        this.serverSideEncryption = serverSideEncryption;
         this.fileSize = fileSize;
-        this.fileKey = fileKey;
+        this.fileType = fileType;
+        this.fileName = fileName;
+        this.eTag = eTag;
+        setAttachmentId();
     }
 
     public String getAttachmentId() {
@@ -54,20 +49,28 @@ public class Attachment {
         this.url = url;
     }
 
-    public String getOwner() {
-        return owner;
+    public Long getFileSize() {
+        return fileSize;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
     }
 
-    public String getLastModifiedTime() {
-        return lastModifiedTime;
+    public String getFileType() {
+        return fileType;
     }
 
-    public void setLastModifiedTime(String lastModifiedTime) {
-        this.lastModifiedTime = lastModifiedTime;
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String geteTag() {
@@ -78,51 +81,16 @@ public class Attachment {
         this.eTag = eTag;
     }
 
-    public String getStorageClass() {
-        return storageClass;
-    }
-
-    public void setStorageClass(String storageClass) {
-        this.storageClass = storageClass;
-    }
-
-    public String getServerSideEncryption() {
-        return serverSideEncryption;
-    }
-
-    public void setServerSideEncryption(String serverSideEncryption) {
-        this.serverSideEncryption = serverSideEncryption;
-    }
-
-    public Double getFIleSize() {
-        return fileSize;
-    }
-
-    public void setFIleSize(Double fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public String getFileKey() {
-        return fileKey;
-    }
-
-    public void setFileKey(String fileKey) {
-        this.fileKey = fileKey;
-    }
-
     @Override
     public String toString() {
         return "Attachment{" +
                 "attachmentId='" + attachmentId + '\'' +
                 ", noteId='" + noteId + '\'' +
                 ", url='" + url + '\'' +
-                ", owner='" + owner + '\'' +
-                ", lastModifiedTime='" + lastModifiedTime + '\'' +
-                ", eTag='" + eTag + '\'' +
-                ", storageClass='" + storageClass + '\'' +
-                ", serverSideEncryption='" + serverSideEncryption + '\'' +
                 ", fileSize=" + fileSize +
-                ", fileKey='" + fileKey + '\'' +
+                ", fileType='" + fileType + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", eTag='" + eTag + '\'' +
                 '}';
     }
 }

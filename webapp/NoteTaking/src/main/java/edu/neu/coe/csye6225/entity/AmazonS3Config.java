@@ -8,6 +8,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class AmazonS3Config {

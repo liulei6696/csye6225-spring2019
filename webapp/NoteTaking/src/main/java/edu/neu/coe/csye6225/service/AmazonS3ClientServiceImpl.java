@@ -6,6 +6,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.model.*;
 
+import edu.neu.coe.csye6225.entity.Attachment;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,28 +63,37 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService{
     @Async
     public void createAttachmentToS3Bucket(MultipartFile multipartFile, boolean enablePublicReadAccess)
     {
+        long fileSize = multipartFile.getSize();
         String fileName = multipartFile.getOriginalFilename();
 
         try {
             //creating the file in the server (temporarily)
             File file = new File(fileName);
+//            if(!file.exists())
+//                return false;
+            String fileType = fileName.substring(fileName.lastIndexOf("."),fileName.length());
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(multipartFile.getBytes());
             fos.close();
 
             PutObjectRequest putObjectRequest = new PutObjectRequest(this.awsS3AudioBucket, fileName, file);
 
-            if (enablePublicReadAccess) {
-                putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
-            }
+//            if (enablePublicReadAccess) {
+//                putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+//            }
             PutObjectResult result = this.amazonS3.putObject(putObjectRequest);
-            if(StringUtils.isNotBlank(result.getETag()))
+            String eTag = result.getETag();
+            if(StringUtils.isNotBlank(eTag))
                 logger.info("Send Attachment to Amazon S3 succeeded, ETag is "+result.getETag());
-            ObjectMetadata metadata = result.getMetadata();
+            // TODO
+            // CALL createAttachment to store file info in db
+//            Attachment attachment = new Attachment()
             //removing the file created in the server
             file.delete();
+//            return true;
         } catch (IOException | AmazonServiceException ex) {
             logger.error("error [" + ex.getMessage() + "] occurred while uploading [" + fileName + "] ");
+//            return false;
         }
     }
 

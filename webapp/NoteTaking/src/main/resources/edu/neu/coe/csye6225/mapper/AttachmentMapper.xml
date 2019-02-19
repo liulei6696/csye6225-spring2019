@@ -6,19 +6,17 @@
         <id column="attachmentId" jdbcType="VARCHAR" property="attachmentId" />
         <result column="noteId" jdbcType="VARCHAR" property="noteId" />
         <result column="url" jdbcType="VARCHAR" property="url" />
-        <result column="owner" jdbcType="VARCHAR" property="owner" />
-        <result column="lastModifiedTime" jdbcType="TIMESTAMP" property="lastModifiedTime" />
+        <result column="fileSize" jdbcType="INTEGER" property="fileSize" />
+        <result column="fileType" jdbcType="VARCHAR" property="fileType" />
+        <result column="fileName" jdbcType="VARCHAR" property="fileName" />
         <result column="eTag" jdbcType="VARCHAR" property="eTag" />
-        <result column="storageClass" jdbcType="VARCHAR" property="storageClass" />
-        <result column="serverSideEncryption" jdbcType="VARCHAR" property="serverSideEncryption" />
-        <result column="fileSize" jdbcType="DOUBLE" property="fileSize" />
-        <result column="fileKey" jdbcType="DOUBLE" property="fileKey" />
+
 
     </resultMap>
 
     <insert id="insertAttachment" parameterType="attachment">
-        insert into attachment(attachmentId,noteId,url,owner,lastModifiedTime,eTag,storageClass,serverSideEncryption,fileSize,fileKey)
-        values(#{attachmentId},#{noteId},#{url},#{owner},#{lastModifiedTime},#{eTag},#{storageClass},#{serverSideEncryption},#{fileSize},#{fileKey})
+        insert into attachment(attachmentId,noteId,url,fileSize,fileType,fileName,eTag)
+        values(#{attachmentId},#{noteId},#{url},#{fileSize},#{fileType},#{fileName},#{eTag})
     </insert>
 
     <delete id="deleteAttachment" parameterType="attachment">
