@@ -24,12 +24,26 @@
         attachmentId=#{attachmentId,jdbcType=VARCHAR}
     </delete>
 
+
+
+    <update id="updateAttachment"  parameterType="attachment">
+    update attachment
+    set
+    url=#{url, jdbcType=VARCHAR},
+    fileSize=#{fileSize,jdbcType=INTEGER},
+    fileType=#{fileType, jdbcType=VARCHAR},
+    fileName=#{fileName,jdbcType=VARCHAR},
+    eTag=#{eTag, jdbcType=VARCHAR}
+    where
+    attachmentId=#{attachmentId, jdbcType=VARCHAR}
+  </update>
+
     <select id="getAllAttachment"  parameterType="String" resultMap="BaseResultMap">
         select
         *
         from attachment
         where
-        attachmentId=#{attachmentId, jdbcType=VARCHAR}
+        noteId=#{noteId, jdbcType=VARCHAR}
     </select>
 
     <select id="getAttachmentById" flushCache="true" parameterType="String"  resultMap="BaseResultMap">

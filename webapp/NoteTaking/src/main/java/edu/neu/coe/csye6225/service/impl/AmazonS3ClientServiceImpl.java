@@ -26,9 +26,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 @Component
-public class AmazonS3ClientServiceImpl implements AmazonS3ClientService {
+public class AmazonS3ClientServiceImpl extends AttachmentServiceImpl implements AmazonS3ClientService {
     private String awsS3AudioBucket;
     private AmazonS3 amazonS3;
     private static final Logger logger = LoggerFactory.getLogger(AmazonS3ClientServiceImpl.class);
@@ -70,11 +71,12 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService {
         long fileSize = multipartFile.getSize();
         String fileName = multipartFile.getOriginalFilename();
         String noteId = note.getNoteId();
+        String fileType = fileName.substring(fileName.lastIndexOf("."),fileName.length());
 
         try {
             //creating the file in the server (temporarily)
             File file = new File(fileName);
-            String fileType = fileName.substring(fileName.lastIndexOf("."),fileName.length());
+
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(multipartFile.getBytes());
             fos.close();
@@ -86,10 +88,32 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService {
             String eTag = result.getETag();
             if(StringUtils.isNotBlank(eTag))
                 logger.info("Send Attachment to Amazon S3 succeeded, Etag is "+eTag);
-            Attachment attachment = new Attachment(noteId,url.toString(),fileSize,fileType,fileName,eTag);
-            if (attachmentMapper.insertAttachment(attachment)<=0){
-                logger.error("meta data failed to insert into database!");
-                return false;
+
+            if(StringUtils.isNotEmpty(attachmentId)){
+                //do update method in mysql
+               Attachment attachment = attachmentMapper.getAttachmentById(attachmentId);
+               if(attachment==null){
+                   logger.error("this attachment does not exists");
+                   return false;
+               }
+               attachment.setUrl(url.toString());
+               attachment.setFileType(fileType);
+               attachment.setFileSize(fileSize);
+               attachment.setFileName(fileName);
+               attachment.seteTag(eTag);
+               if(attachmentMapper.updateAttachment(attachment)<=0){
+                   logger.error("update attachment information failed");
+                   return false;
+               }
+
+            }
+            else {
+                //do create method in mysql
+                Attachment attachment = new Attachment(noteId,url.toString(),fileSize,fileType,fileName,eTag);
+                if (attachmentMapper.insertAttachment(attachment)<=0){
+                    logger.error("meta data failed to insert into database!");
+                    return false;
+                }
             }
             logger.info("Attachment information has been successfully saved to database");
             //removing the file created in the server
@@ -107,6 +131,10 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService {
     public boolean deleteAttachmentFromS3Bucket(Note note, String attachmentId)
     {
         Attachment attachment = attachmentMapper.getAttachmentById(attachmentId);
+        if(attachment==null){
+            logger.error("this attachment does not exists");
+            return false;
+        }
         try {
             amazonS3.deleteObject(new DeleteObjectRequest(awsS3AudioBucket, attachment.getFileName()));
             logger.info("delete attachment from S3 succeeded");
@@ -121,4 +149,6 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService {
             return false;
         }
     }
+
+
 }
