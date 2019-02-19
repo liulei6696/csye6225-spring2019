@@ -1,14 +1,14 @@
-package edu.neu.coe.csye6225.service;
+package edu.neu.coe.csye6225.service.impl;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.model.*;
 
 import edu.neu.coe.csye6225.entity.Attachment;
 import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.mapper.AttachmentMapper;
+import edu.neu.coe.csye6225.service.AmazonS3ClientService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -29,7 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 
 @Component
-public class AmazonS3ClientServiceImpl implements AmazonS3ClientService{
+public class AmazonS3ClientServiceImpl implements AmazonS3ClientService {
     private String awsS3AudioBucket;
     private AmazonS3 amazonS3;
     private static final Logger logger = LoggerFactory.getLogger(AmazonS3ClientServiceImpl.class);
@@ -66,7 +65,7 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService{
     }
 
     @Async
-    public boolean createAttachmentToS3Bucket(Note note, MultipartFile multipartFile, boolean enablePublicReadAccess)
+    public boolean createAttachmentToS3Bucket(Note note, String attachmentId, MultipartFile multipartFile, boolean enablePublicReadAccess)
     {
         long fileSize = multipartFile.getSize();
         String fileName = multipartFile.getOriginalFilename();
@@ -101,6 +100,8 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService{
             return false;
         }
     }
+
+
 
     @Async
     public boolean deleteAttachmentFromS3Bucket(Note note, String attachmentId)

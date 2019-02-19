@@ -30,7 +30,8 @@ public class AttachmentController {
     @PostMapping
     public Map<String, String> uploadFile(@RequestPart(value = "file") MultipartFile file)
     {
-        this.amazonS3ClientService.createAttachmentToS3Bucket(new Note(),file, true);
+        //if attachmentId="", means create new attachment. If attachmentId is passed, means update existed attachment
+        this.amazonS3ClientService.createAttachmentToS3Bucket(new Note(),"",file, true);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "file [" + file.getOriginalFilename() + "] uploading request submitted successfully.");
