@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 
+@Deprecated
 public class LocalStorageServiceImpl extends AttachmentServiceImpl implements LocalStorageService {
     @Autowired
     private AttachmentMapper attachmentMapper;

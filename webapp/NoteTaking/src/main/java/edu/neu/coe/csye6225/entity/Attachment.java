@@ -22,15 +22,15 @@ public class Attachment {
         this.fileType = fileType;
         this.fileName = fileName;
         this.eTag = eTag;
-        setAttachmentId();
+        this.attachmentId = UUID.randomUUID().toString();
     }
 
     public String getAttachmentId() {
         return attachmentId;
     }
 
-    public void setAttachmentId() {
-        this.attachmentId = UUID.randomUUID().toString();
+    public void setAttachmentId(String id) {
+        this.attachmentId = id;
     }
 
     public String getNoteId() {

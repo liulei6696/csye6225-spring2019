@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+@Deprecated
 @Component
 public class AmazonS3ClientServiceImpl extends AttachmentServiceImpl implements AmazonS3ClientService {
     private String awsS3AudioBucket;

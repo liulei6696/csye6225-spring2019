@@ -5,6 +5,7 @@ import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.mapper.AttachmentMapper;
 import edu.neu.coe.csye6225.mapper.NoteMapper;
 import edu.neu.coe.csye6225.service.AttachmentService;
+import edu.neu.coe.csye6225.service.FileSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -16,6 +17,9 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Autowired
     private NoteMapper noteMapper;
+
+    @Autowired
+    private FileSaveService fileSaveService;
 
     @Override
     public List<Attachment> getAllAttachments(String noteId) {
@@ -47,6 +51,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Boolean addAttachment(String noteId, Attachment attachment) {
+        if(getAttachmentById(attachment.getAttachmentId()) != null)
+            return true;
         attachment.setNoteId(noteId);
         return (attachmentMapper.insertAttachment(attachment) > 0);
     }
