@@ -7,4 +7,9 @@ import java.util.List;
 
 public interface AttachmentService {
     List<Attachment>getAllAttachments(String noteId);
+    Attachment getAttachmentById(String attachmentId);
+    Attachment deleteAttachment(String attachmentId);
+    Boolean addAttachment (String noteId, Attachment attachment); // associate attachment with note
+    Boolean updateAttachment (Attachment oldAttachment, Attachment newAttachment);
+    Boolean attBelongToUser(String attId, String userId);
 }

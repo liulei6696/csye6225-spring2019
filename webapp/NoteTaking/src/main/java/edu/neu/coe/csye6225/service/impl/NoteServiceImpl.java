@@ -97,4 +97,9 @@ public class NoteServiceImpl implements NoteService {
             noteList = noteMapper.getAllNotes(user.getUsername());
         return noteList;
     }
+
+    @Override
+    public Boolean noteBelongToUser(String noteId, String userId) {
+        return noteMapper.getNoteById(noteId).getUserId().equals(userId);
+    }
 }

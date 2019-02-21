@@ -13,8 +13,9 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class QuickResponse {
 
     /**
-     * static method
+     * static method, when user login failed
      * construct unauthorized message for controller
+     *
      * @param httpServletResponse the http servlet response of controller
      * @return the response entity
      * @throws IOException the exception of sendError()
@@ -24,6 +25,22 @@ public class QuickResponse {
         resultJson.put("message", "Login failure! The username or password is wrong");
         httpServletResponse.setHeader("status", String.valueOf(SC_UNAUTHORIZED));
         httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
+        return ResponseEntity.badRequest()
+                .body(resultJson.toString());
+    }
+
+    /**
+     * when user don't have access to one resource
+     *
+     * @param httpServletResponse http servlet response
+     * @return response entity
+     * @throws IOException by sendError()
+     */
+    public static ResponseEntity<String> userNoAccess(@NotNull HttpServletResponse httpServletResponse) throws IOException{
+        JSONObject resultJson = new JSONObject();
+        resultJson.put("message", "No access to resource");
+        httpServletResponse.setHeader("status", String.valueOf(SC_UNAUTHORIZED));
+        httpServletResponse.sendError(SC_UNAUTHORIZED,"No access to resource");
         return ResponseEntity.badRequest()
                 .body(resultJson.toString());
     }

@@ -11,6 +11,7 @@ public interface NoteService {
     Note updateNote(User user,Note note);
     Note getNoteById(User user,String noteId);
     List<Note> getAllNotes(User user);
+    Boolean noteBelongToUser(String noteId, String userId);
 }
 
 

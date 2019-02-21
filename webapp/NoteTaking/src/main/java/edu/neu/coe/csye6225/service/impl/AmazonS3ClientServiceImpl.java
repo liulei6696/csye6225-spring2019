@@ -66,12 +66,16 @@ public class AmazonS3ClientServiceImpl extends AttachmentServiceImpl implements 
     }
 
     @Async
-    public boolean createAttachmentToS3Bucket(Note note, String attachmentId, MultipartFile multipartFile, boolean enablePublicReadAccess)
+    public Attachment createAttachmentToS3Bucket(Note note, String attachmentId, MultipartFile multipartFile, boolean enablePublicReadAccess)
     {
         long fileSize = multipartFile.getSize();
         String fileName = multipartFile.getOriginalFilename();
         String noteId = note.getNoteId();
+
+        // TODO: what if this file does not have suffix FATAL!
         String fileType = fileName.substring(fileName.lastIndexOf("."),fileName.length());
+
+        Attachment attachment = new Attachment();
 
         try {
             //creating the file in the server (temporarily)
@@ -91,10 +95,10 @@ public class AmazonS3ClientServiceImpl extends AttachmentServiceImpl implements 
 
             if(StringUtils.isNotEmpty(attachmentId)){
                 //do update method in mysql
-               Attachment attachment = attachmentMapper.getAttachmentById(attachmentId);
+                attachment = attachmentMapper.getAttachmentById(attachmentId);
                if(attachment==null){
                    logger.error("this attachment does not exists");
-                   return false;
+                   return null;
                }
                attachment.setUrl(url.toString());
                attachment.setFileType(fileType);
@@ -103,26 +107,28 @@ public class AmazonS3ClientServiceImpl extends AttachmentServiceImpl implements 
                attachment.seteTag(eTag);
                if(attachmentMapper.updateAttachment(attachment)<=0){
                    logger.error("update attachment information failed");
-                   return false;
+                   return null;
                }
 
             }
             else {
                 //do create method in mysql
-                Attachment attachment = new Attachment(noteId,url.toString(),fileSize,fileType,fileName,eTag);
-                if (attachmentMapper.insertAttachment(attachment)<=0){
+                Attachment att = new Attachment(noteId,url.toString(),fileSize,fileType,fileName,eTag);
+                if (attachmentMapper.insertAttachment(att)<=0){
                     logger.error("meta data failed to insert into database!");
-                    return false;
+                    return null;
+                } else {
+                    logger.info("Attachment information has been successfully saved to database");
+                    //removing the file created in the server
+                    file.delete();
+                    return att;
                 }
             }
-            logger.info("Attachment information has been successfully saved to database");
-            //removing the file created in the server
-            file.delete();
-            return true;
         } catch (IOException | AmazonServiceException ex) {
             logger.error("error [" + ex.getMessage() + "] occurred while uploading [" + fileName + "] ");
-            return false;
+            return null;
         }
+        return null;
     }
 
 
