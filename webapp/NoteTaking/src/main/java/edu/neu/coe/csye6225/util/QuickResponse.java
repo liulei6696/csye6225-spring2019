@@ -56,10 +56,11 @@ public class QuickResponse {
      * quick construct a response, return bad_request
      *
      */
-    public static ResponseEntity<String> quickBadRequestConstruct(@NotNull HttpServletResponse httpServletResponse, String message) {
+    public static ResponseEntity<String> quickBadRequestConstruct(@NotNull HttpServletResponse httpServletResponse, String message) throws IOException{
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", message);
         httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+        httpServletResponse.sendError(SC_UNAUTHORIZED,message);
         return ResponseEntity.badRequest()
                 .body(jsonObject.toString());
     }

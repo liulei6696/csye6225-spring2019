@@ -72,6 +72,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Boolean attBelongToUser(String attId, String userId) {
+        if(getAttachmentById(attId) == null)
+            return false;
         return noteMapper.getNoteById(getAttachmentById(attId).getNoteId()).getUserId().equals(userId);
     }
 }
