@@ -16,12 +16,12 @@ public class Note {
 
 
     public Note() {
-
+        this.noteId = UUID.randomUUID().toString();
     }
 
     //create new note, assign note id
     public Note(String userId, String title, String content) {
-        setNoteId();
+        this.noteId = UUID.randomUUID().toString();
         this.username = userId;
         this.title = title;
         this.content = content;
@@ -34,8 +34,8 @@ public class Note {
         return noteId;
     }
 
-    public void setNoteId() {
-        this.noteId = UUID.randomUUID().toString();
+    public void setNoteId(String newID) {
+        this.noteId = newID;
     }
 
     public String getUserId() {

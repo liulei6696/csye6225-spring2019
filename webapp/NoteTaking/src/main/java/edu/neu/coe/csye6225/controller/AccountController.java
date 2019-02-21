@@ -2,8 +2,10 @@ package edu.neu.coe.csye6225.controller;
 
 import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.service.AccountService;
+import edu.neu.coe.csye6225.service.AccountValidation;
 import edu.neu.coe.csye6225.service.UserVerification;
-import edu.neu.coe.csye6225.util.ResultJson;
+import edu.neu.coe.csye6225.util.QuickResponse;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,58 +17,104 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 @RestController
 public class AccountController {
-    @Autowired
-    private AccountService accountService;
 
+    private final AccountService accountService;
+    private final AccountValidation accountValidation;
+
+    /**
+     * changed field dependency injection to constructor injection
+     * @param accountService autowired account service
+     */
+    @Autowired
+    public AccountController (AccountService accountService, AccountValidation accountValidation) {
+        this.accountService = accountService;
+        this.accountValidation = accountValidation;
+    }
+
+    /**
+     * controller for user register "/user/register"
+     * @param user request body in json
+     * @param httpServletResponse response
+     * @return response body in json
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/user/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
-        ResultJson resultJson = new ResultJson();
-        if(accountService.signUp(user)){
-            resultJson.put("status", String.valueOf(HttpStatus.OK));
-            resultJson.put("message", "register success");
-            return ResponseEntity.ok()
-                    .body(resultJson.toString());
-        }else {
-            resultJson.put("status", String.valueOf(HttpStatus.BAD_REQUEST));
-            resultJson.put("message", "register failed!");
+    public ResponseEntity<String> register(@RequestBody User user, HttpServletResponse httpServletResponse) {
+
+        // validate username
+        if(!accountValidation.nameValidation(user.getUsername())) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "register failed");
+            jsonObject.put("cause", "username not valid");
+            httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
             return ResponseEntity.badRequest()
-                    .body(resultJson.toString());
+                    .body(jsonObject.toString());
+        }
+
+        // validate password
+        else if(!accountValidation.isPasswordStrong(user.getPassword())) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "register failed");
+            jsonObject.put("cause", "password not strong enough");
+            httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+            return ResponseEntity.badRequest()
+                    .body(jsonObject.toString());
+        }
+
+        // validate if user already registered
+        else if(accountValidation.isUserRegistered(user)) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "register failed");
+            jsonObject.put("cause", "user already registered");
+            httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+            return ResponseEntity.badRequest()
+                    .body(jsonObject.toString());
+        }
+
+        // sign up into database
+        else if(accountService.signUp(user)){
+            JSONObject jsonObject = new JSONObject();
+            httpServletResponse.setHeader("status", String.valueOf(HttpStatus.OK));
+            jsonObject.put("message", "register success");
+            return ResponseEntity.ok()
+                    .body(jsonObject.toString());
+        }else {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "register failed!");
+            jsonObject.put("cause", "unkown");
+            return ResponseEntity.badRequest()
+                    .body(jsonObject.toString());
         }
     }
 
+
+    /**
+     * controller for mapping "/"
+     * @param httpServletRequest verification info
+     * @param httpServletResponse response message
+     * @return current date if username and password is correct
+     * @throws IOException by sendError()
+     */
     @GetMapping("/")
     public ResponseEntity<String> getUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         String auth = httpServletRequest.getHeader("Authorization");
         User user = UserVerification.addVerification(auth);
-        ResultJson resultJson = new ResultJson();
         if(user == null){
-            httpServletResponse.setStatus(SC_UNAUTHORIZED);
-
-            httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
-
-            resultJson.put("status", String.valueOf(HttpStatus.UNAUTHORIZED));
-            resultJson.put("message", "Login failure! The username or password is wrong");
-            return ResponseEntity.badRequest()
-                    .body(resultJson.toString());
-
+            return QuickResponse.userUnauthorized(httpServletResponse);
         }
         if(accountService.logIn(user)){
+            JSONObject jsonObject = new JSONObject();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            resultJson.put("status", String.valueOf(HttpStatus.CREATED));
-            resultJson.put("date", df.format(new Date()));
+            httpServletResponse.setHeader("status", String.valueOf(SC_OK));
+            jsonObject.put("date", df.format(new Date()));
             return ResponseEntity.ok()
-                    .body(resultJson.toString());
+                    .body(jsonObject.toString());
         }else {
-            resultJson.put("status", String.valueOf(HttpStatus.UNAUTHORIZED));
-            resultJson.put("message", "Login failure! The username or password is wrong");
-            httpServletResponse.setStatus(SC_UNAUTHORIZED);
-            httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
-            return ResponseEntity.badRequest()
-                    .body(resultJson.toString());
+            return QuickResponse.userUnauthorized(httpServletResponse);
         }
 
     }
