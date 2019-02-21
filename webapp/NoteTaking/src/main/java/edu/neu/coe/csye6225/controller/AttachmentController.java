@@ -115,16 +115,11 @@ public class AttachmentController {
                                                          HttpServletResponse httpServletResponse) throws IOException {
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
 
-        if (user == null) {
+        if (user == null)
             return QuickResponse.userUnauthorized(httpServletResponse);
-        }
-        if (file == null){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("message", "No file");
-            httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
-            return ResponseEntity.badRequest()
-                    .body(jsonObject.toString());
-        }
+
+        if (file == null)
+            return QuickResponse.noFile(httpServletResponse);
 
         if (accountService.logIn(user)) {
             if (!noteService.noteBelongToUser(noteId, user.getUsername())) {
@@ -153,7 +148,8 @@ public class AttachmentController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/note/{noteId}/attachments/{attachmentId}")
-    public ResponseEntity<String> updateAttachment(@PathVariable("noteId") String noteId,
+    public ResponseEntity<String> updateAttachment(@RequestPart("file") MultipartFile file,
+                                                   @PathVariable("noteId") String noteId,
                                                    @PathVariable("attachmentId") String attachmentId,
                                                    HttpServletRequest httpServletRequest,
                                                    HttpServletResponse httpServletResponse) throws IOException {
@@ -162,8 +158,37 @@ public class AttachmentController {
         if (user == null) {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
-        if (accountService.logIn(user)) { // TODO
-            return null;
+
+        if (file == null)
+            return QuickResponse.noFile(httpServletResponse);
+
+        if (accountService.logIn(user)) {
+            if(!noteService.noteBelongToUser(noteId, user.getUsername()))
+                return QuickResponse.userNoAccess(httpServletResponse);
+            if(!attachmentService.attBelongToUser(attachmentId, user.getUsername()))
+                return QuickResponse.userNoAccess(httpServletResponse);
+
+            if(file.getOriginalFilename().equals(attachmentService.getAttachmentById(attachmentId).getFileName())){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("message", "file exists");
+                httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+                return ResponseEntity.badRequest()
+                        .body(jsonObject.toString());
+            }
+
+            Attachment att = fileSaveService.saveFile(noteId, file);
+
+            if(att == null) {
+                return QuickResponse.quickBadRequestConstruct(httpServletResponse, "file saving error");
+            }
+
+            if(attachmentService.updateAttachment(attachmentId, att)) {
+                return ResponseEntity.noContent()
+                        .build();
+            } else {
+                return QuickResponse.quickBadRequestConstruct(httpServletResponse, "file not updated successfully");
+            }
+
         } else {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }

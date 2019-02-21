@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import java.io.IOException;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
 public class QuickResponse {
@@ -16,9 +17,6 @@ public class QuickResponse {
      * static method, when user login failed
      * construct unauthorized message for controller
      *
-     * @param httpServletResponse the http servlet response of controller
-     * @return the response entity
-     * @throws IOException the exception of sendError()
      */
     public static ResponseEntity<String> userUnauthorized(@NotNull HttpServletResponse httpServletResponse) throws IOException {
         JSONObject resultJson = new JSONObject();
@@ -32,9 +30,6 @@ public class QuickResponse {
     /**
      * when user don't have access to one resource
      *
-     * @param httpServletResponse http servlet response
-     * @return response entity
-     * @throws IOException by sendError()
      */
     public static ResponseEntity<String> userNoAccess(@NotNull HttpServletResponse httpServletResponse) throws IOException{
         JSONObject resultJson = new JSONObject();
@@ -43,5 +38,29 @@ public class QuickResponse {
         httpServletResponse.sendError(SC_UNAUTHORIZED,"No access to resource");
         return ResponseEntity.badRequest()
                 .body(resultJson.toString());
+    }
+
+    /**
+     * when no file is uploaded
+     *
+     */
+    public static ResponseEntity<String> noFile(@NotNull HttpServletResponse httpServletResponse) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "No file");
+        httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+        return ResponseEntity.badRequest()
+                .body(jsonObject.toString());
+    }
+
+    /**
+     * quick construct a response, return bad_request
+     *
+     */
+    public static ResponseEntity<String> quickBadRequestConstruct(@NotNull HttpServletResponse httpServletResponse, String message) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", message);
+        httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+        return ResponseEntity.badRequest()
+                .body(jsonObject.toString());
     }
 }

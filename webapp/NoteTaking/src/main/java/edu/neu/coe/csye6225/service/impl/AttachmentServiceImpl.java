@@ -18,9 +18,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Autowired
     private NoteMapper noteMapper;
 
-    @Autowired
-    private FileSaveService fileSaveService;
-
     @Override
     public List<Attachment> getAllAttachments(String noteId) {
         return attachmentMapper.getAllAttachment(noteId);
@@ -58,18 +55,19 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     /**
-     * delete old attachment and insert new attachment
-     * @param oldAttachment old attachment ID
-     * @param newAttachment new attachment ID
-     * @return true if success, false if failed
+     *
      */
     @Override
-    public Boolean updateAttachment(Attachment oldAttachment, Attachment newAttachment) {
-        if (attachmentMapper.deleteAttachment(oldAttachment) > 0) {
-            return (attachmentMapper.insertAttachment(newAttachment) > 0);
-
+    public Boolean updateAttachment(String oldId, Attachment newAttachment) {
+        try{
+            newAttachment.setAttachmentId(oldId);
+            deleteAttachment(oldId);
+            attachmentMapper.insertAttachment(newAttachment);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override

@@ -12,6 +12,6 @@ public interface AttachmentService {
     Attachment deleteAttachment(String attachmentId);
 
     Boolean addAttachment (String noteId, Attachment attachment);
-    Boolean updateAttachment (Attachment oldAttachment, Attachment newAttachment);
+    Boolean updateAttachment (String oldId, Attachment newAttachment);
     Boolean attBelongToUser(String attId, String userId);
 }
