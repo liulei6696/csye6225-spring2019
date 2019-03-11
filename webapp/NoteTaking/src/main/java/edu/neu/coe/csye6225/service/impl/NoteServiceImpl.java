@@ -1,8 +1,10 @@
-package edu.neu.coe.csye6225.service;
+package edu.neu.coe.csye6225.service.impl;
 
 import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.mapper.NoteMapper;
+import edu.neu.coe.csye6225.service.AccountService;
+import edu.neu.coe.csye6225.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class NoteServiceImpl implements NoteService{
+public class NoteServiceImpl implements NoteService {
 
     @Autowired
     private AccountService accountService;
@@ -94,5 +96,10 @@ public class NoteServiceImpl implements NoteService{
         List<Note> noteList = new ArrayList<>();
             noteList = noteMapper.getAllNotes(user.getUsername());
         return noteList;
+    }
+
+    @Override
+    public Boolean noteBelongToUser(String noteId, String userId) {
+        return noteMapper.getNoteById(noteId).getUserId().equals(userId);
     }
 }

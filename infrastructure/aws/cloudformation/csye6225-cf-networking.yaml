@@ -94,3 +94,26 @@ Resources:
     Properties:
       SubnetId: !Ref PublicSubnetC
       RouteTableId: !Ref PublicRouteTable
+
+Outputs:
+    StackVPC:
+      Description: The ID of the VPC
+      Value: !Ref VPC
+      Export:
+        Name: !Sub "${AWS::StackName}-VPCID"
+    SubnetA:
+      Description: The ID of the subnet A
+      Value: !Ref PublicSubnetA
+      Export:
+        Name: !Sub "${AWS::StackName}-SUBNETAID"
+    SubnetB:
+      Description: The ID of the subnet B
+      Value: !Ref PublicSubnetB
+      Export:
+        Name: !Sub "${AWS::StackName}-SUBNETBID"
+    SubnetC:
+      Description: The ID of the subnet C
+      Value: !Ref PublicSubnetC
+      Export:
+        Name: !Sub "${AWS::StackName}-SUBNETCID"
+
