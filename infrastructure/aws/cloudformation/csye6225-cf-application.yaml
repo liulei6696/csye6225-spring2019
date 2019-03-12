@@ -1,0 +1,132 @@
+Parameters:
+  refStackName:
+    Type: String
+  amiId:
+    Type: String
+
+Resources:
+# Security Group for Web Servers
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${refStackName}-VPCID"
+      GroupDescription: Enable HTTP access svia user defined port
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 80
+        IpProtocol: tcp
+        ToPort: 80
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+      - CidrIp: 0.0.0.0/0
+        FromPort: 443
+        IpProtocol: tcp
+        ToPort: 443
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-csye6225-websg
+
+# EC2 Instance
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Sub "${amiId}"
+      InstanceType: t2.micro
+      DisableApiTermination: false
+      SecurityGroupIds:
+        - !GetAtt WebSecurityGroup.GroupId
+      SubnetId:
+        Fn::ImportValue: !Sub "${refStackName}-SUBNETAID"
+      BlockDeviceMappings: 
+        - DeviceName: /dev/sdm
+          Ebs: 
+            VolumeType: gp2
+            DeleteOnTermination: true
+            VolumeSize: 20
+      KeyName: KeyPair5
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-csye6225-ec2inst
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum install httpd -y
+          echo "<html>Hello From Server${AWS::Region}</html>" > /var/www/html/index.html;
+          cd /var/www/html
+          chmod 755 index.html
+          service httpd start
+          chkconfig httpd ons
+
+# # DynamoDB Table
+#   MyDynamoDB:
+#     Type: AWS::DynamoDB::Table
+#     Properties:
+#       AttributeDefinitions:
+#       -
+#         AttributeName: "id"
+#         AttributeType: "S"
+#       KeySchema:
+#       - 
+#         AttributeName: "id"
+#         KeyType: "HASH"
+#       ProvisionedThroughput:
+#         ReadCapacityUnits: 5
+#         WriteCapacityUnits: 5
+#       Tags:
+#       - Key: Name
+#         Value: !Sub ${AWS::StackName}-csye6225-dyndb
+
+# # RDS Instance
+#   MyRDSInstance:
+#     Type: AWS::RDS::DBInstance
+#     Properties:
+#       DBName: csye6225
+#       Engine: MySQL
+#       DBInstanceClass: db.t2.medium
+#       MultiAZ: false
+#       DBInstanceIdentifier: csye6225-spring2019
+#       MasterUsername: csye6225master
+#       MasterUserPassword: csye6225password
+#       DBSubnetGroupName: !Ref myDBSubnetGroup
+#       PubliclyAccessible: true
+#       AllocatedStorage: 5
+#       VPCSecurityGroups:
+#       - !GetAtt DBEC2SecurityGroup.GroupId
+#       Tags:
+#       - Key: Name
+#         Value: !Sub ${AWS::StackName}-csye6225-dyndb
+
+# # subnet group for RDS instance
+#   myDBSubnetGroup: 
+#     Type: "AWS::RDS::DBSubnetGroup"
+#     Properties: 
+#       DBSubnetGroupDescription: "subnet group for RDS instance"
+#       SubnetIds: 
+#         - Fn::ImportValue: !Sub "${refStackName}-SUBNETAID"
+#         - Fn::ImportValue: !Sub "${refStackName}-SUBNETBID"
+#         - Fn::ImportValue: !Sub "${refStackName}-SUBNETCID"
+#       Tags:
+#         - Key: Name
+#           Value: !Sub ${AWS::StackName}-csye6225-rdssubg
+
+# # EC2 security group for RDS instance
+#   DBEC2SecurityGroup:
+#     Type: AWS::EC2::SecurityGroup
+#     Properties:
+#       GroupDescription: Open database for access
+#       VpcId: 
+#         Fn::ImportValue:
+#           !Sub "${refStackName}-VPCID"
+#       SecurityGroupIngress:
+#       - SourceSecurityGroupId: !Ref WebSecurityGroup
+#         IpProtocol: tcp
+#         FromPort: '3306'
+#         ToPort: '3306'
+#         # SourceSecurityGroupName: !Ref WebSecurityGroup
+#       Tags:
+#       - Key: Name
+#         Value: !Sub ${AWS::StackName}-csye6225-rdssg
