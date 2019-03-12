@@ -1,0 +1,34 @@
+Resource:
+WebappApplication: 
+  Type: AWS::CodeDeploy::Application
+  Properties:
+    ApplicationName: csye6225-webapp
+    ComputePlatform: EC2/On-premises
+
+
+WebappDeploymentGroup:
+  Type: AWS::CodeDeploy::DeploymentGroup
+  Properties:
+    ApplicationName: !Ref WebappApplication
+    AutoRollbackConfiguration:
+      Enabled: 'true'
+      Events:
+        - DEPLOYMENT_FAILURE
+    DeploymentConfigName: CodeDeployDefault.AllAtOnce
+    DeploymentGroupName: csye6225-webapp-deployment
+    DeploymentStyle:
+      DeploymentType: In-place
+    Ec2TagSet:
+      - Key: csye6225_key
+        Value: csye6225_value
+        Type: KEY_AND_VALUE
+    ServiceRoleArn: !GetAtt CodeDeployServiceRole.Arn
+
+Outputs:
+  DeploymentGroup:
+    Description: Webapp Deployment Group
+    Value: !Ref WebappDeploymentGroup
+  ApplicationName:
+    Description: CodeDeploy Application name
+    Value: !Ref WebappApplication
+      
