@@ -118,7 +118,7 @@ public class AttachmentController {
         if (user == null)
             return QuickResponse.userUnauthorized(httpServletResponse);
 
-        if (file == null)
+        if (file.isEmpty())
             return QuickResponse.noFile(httpServletResponse);
 
         if (accountService.logIn(user)) {
@@ -159,7 +159,7 @@ public class AttachmentController {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
 
-        if (file == null)
+        if (file.isEmpty())
             return QuickResponse.noFile(httpServletResponse);
 
         if (accountService.logIn(user)) {
