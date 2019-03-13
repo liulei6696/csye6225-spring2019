@@ -3,6 +3,9 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk
+    branches:
+      only:
+       - assignment5
     steps:
       - checkout
 
