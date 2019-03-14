@@ -78,9 +78,10 @@ Resources:
         Statement:
         - Effect: Allow
           Action:
-          - s3:PutObject
+          - s3:*
           Resource:
-          - "*"
+          - !Sub ${bucketName},
+          - !Sub "${bucketName}/*"
 
   CirlceCI-Code-Deploy:
     Type: AWS::IAM::ManagedPolicy

@@ -3,8 +3,41 @@ Parameters:
     Type: String
   amiId:
     Type: String
+  roleStackName:
+    Type: String
 
 Resources:
+  WebappApplication: 
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ApplicationName: "csye6225-webapp"
+      ComputePlatform: Server
+
+
+  WebappDeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: !Ref WebappApplication
+      AutoRollbackConfiguration:
+        Enabled: True
+        Events:
+          - "DEPLOYMENT_FAILURE"
+      DeploymentConfigName: "CodeDeployDefault.AllAtOnce"
+      DeploymentGroupName: "csye6225-webapp-deployment"
+      DeploymentStyle:
+        DeploymentType: "IN_PLACE"
+        DeploymentOption: "WITHOUT_TRAFFIC_CONTROL"
+      Ec2TagFilters:
+          - 
+            Key: 
+              "Name"
+            Value: 
+              !Sub ${AWS::StackName}-Ec2Instance
+            Type: 
+              "KEY_AND_VALUE"
+      ServiceRoleArn:
+        Fn::ImportValue:
+          !Sub ${roleStackName}-CodeDeployServiceRole-Arn
 # Security Group for Web Servers
   WebSecurityGroup:
     Type: AWS::EC2::SecurityGroup
