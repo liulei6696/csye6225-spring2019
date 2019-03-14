@@ -68,6 +68,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !Sub ${amiId}
+      KeyName: csye6225
       InstanceType: t2.micro
       DisableApiTermination: false
       SecurityGroupIds:
