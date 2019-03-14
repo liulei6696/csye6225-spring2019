@@ -38,7 +38,10 @@ jobs:
             pwd
             mkdir -p codedeploy_artifact
             cp infrastructure/aws/codedeploy/*.sh .
+<<<<<<< HEAD
             pwd
+=======
+>>>>>>> 1fd66c0ce5e7cd4471c6022a936eeb7a6bcfad80
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/NoteTaking/target/NoteTaking-0.0.1-SNAPSHOT.jar *.sh *.yml
             mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
             cd codedeploy_artifact
@@ -56,5 +59,9 @@ jobs:
           name: Make CodeDeploy API call
           command: |
             echo "Hello CodeDeploy" 
+<<<<<<< HEAD
             aws deploy create-deployment --application-name csye6225-webapp --deployment-group-name csye6225-webapp-deployment --s3-location bucket=${S3_ARN},bundleType=zip,key=codedeploy_artifact/csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
 
+=======
+            aws deploy create-deployment --application-name csye6225-webapp --deployment-group-name csye6225-webapp-deployment --s3-location bucket=${S3_ARN},bundleType=zip,key=codedeploy_artifact/csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
+>>>>>>> 1fd66c0ce5e7cd4471c6022a936eeb7a6bcfad80
