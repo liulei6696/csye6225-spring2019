@@ -71,6 +71,7 @@ Resources:
       KeyName: csye6225
       InstanceType: t2.micro
       DisableApiTermination: false
+      MapPublicIpOnLaunch: True
       SecurityGroupIds:
         - !GetAtt WebSecurityGroup.GroupId
       SubnetId:
@@ -84,14 +85,15 @@ Resources:
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-csye6225-ec2inst
-      # UserData:
-      #   Fn::Base64: !Sub |
-      #     #!/bin/bash -xe
-      #     !Join 
-      #       - ''
-      #       - - 'echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.datasource.url=\\\"jdbc:mysql://'
-      #       - - !GetAtt MyRDSInstance.Endpoint.Address
-      #       - - ':3306/csye6225\\\"\"' >> /etc/default/tomcat8 \n'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          !Join 
+            - ''
+            - - 'echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.datasource.url=\\\"jdbc:mysql://'
+            - - !GetAtt MyRDSInstance.Endpoint.Address
+            - - ':3306/csye6225\\\"\"' \n'
+
 
 # DynamoDB Table
   MyDynamoDB:
