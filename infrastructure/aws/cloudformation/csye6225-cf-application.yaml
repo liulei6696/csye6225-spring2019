@@ -67,7 +67,7 @@ Resources:
   Ec2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !Sub "${amiId}"
+      ImageId: !Sub ${amiId}
       InstanceType: t2.micro
       DisableApiTermination: false
       SecurityGroupIds:
