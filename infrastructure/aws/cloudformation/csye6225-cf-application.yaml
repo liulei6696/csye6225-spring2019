@@ -32,7 +32,7 @@ Resources:
             Key: 
               "Name"
             Value: 
-              !Sub ${AWS::StackName}-Ec2Instance
+              !Sub ${AWS::StackName}-csye6225-ec2inst
             Type: 
               "KEY_AND_VALUE"
       ServiceRoleArn:
