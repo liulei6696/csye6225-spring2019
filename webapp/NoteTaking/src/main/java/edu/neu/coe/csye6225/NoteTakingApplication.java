@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @MapperScan(basePackages = {"edu.neu.coe.csye6225.mapper"})
-class NoteTakingApplication {
+public class NoteTakingApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NoteTakingApplication.class, args);
