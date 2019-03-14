@@ -79,6 +79,7 @@ Resources:
       KeyName: csye6225
       InstanceType: t2.micro
       DisableApiTermination: false
+      MapPublicIpOnLaunch: True
       SecurityGroupIds:
         - !GetAtt WebSecurityGroup.GroupId
       SubnetId:
@@ -93,6 +94,7 @@ Resources:
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-csye6225-ec2inst
+
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
