@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: ./webapp/NoteTaking/target/
+  - source: ./
     destination: /home/centos/
 hooks:
   AfterInstall:

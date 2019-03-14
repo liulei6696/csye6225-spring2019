@@ -56,4 +56,5 @@ jobs:
           name: Make CodeDeploy API call
           command: |
             echo "Hello CodeDeploy" 
+            aws deploy create-deployment --application-name csye6225-webapp --deployment-group-name csye6225-webapp-deployment --s3-location bucket=${S3_ARN},bundleType=zip,key=codedeploy_artifact/csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
 
