@@ -5,7 +5,7 @@ set -e
 work_dir=$(cd `dirname $0`; pwd)
 cd ${work_dir}
 
-ami=`aws ec2 describe-images --owners self --filters "Name=root-device-type,Values=ebs" | grep -o '"ImageId": *"[^"]*"' | grep -o '"[^"]*"$' | sed 's/\"//g' | tail -n 1`
+ami=`aws ec2 describe-images --owners self --filters 'Name=root-device-type,Values=ebs' --query 'sort_by(Images, &CreationDate)[-1].[ImageId]' --output 'text'`
 read -p "Input name of the new stack: " stackName
 read -p "Input name of the stack you want to refer to: " refStackName
 read -p "Input name of the role stack you want to refer to: " roleStackName
