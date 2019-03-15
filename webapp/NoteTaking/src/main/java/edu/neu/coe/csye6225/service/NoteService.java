@@ -14,6 +14,7 @@ public interface NoteService {
     List<Note> getAllNotes(User user);
     Boolean noteBelongToUser(String noteId, String userId);
     JSONObject getNoteDetailWithAttachment (String noteId);
+    void createNew();
 }
 
 

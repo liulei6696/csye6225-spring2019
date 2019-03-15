@@ -1,9 +1,7 @@
 package edu.neu.coe.csye6225.controller;
 
 import edu.neu.coe.csye6225.entity.User;
-import edu.neu.coe.csye6225.service.AccountService;
-import edu.neu.coe.csye6225.service.AccountValidation;
-import edu.neu.coe.csye6225.service.UserVerification;
+import edu.neu.coe.csye6225.service.*;
 import edu.neu.coe.csye6225.util.QuickResponse;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +23,20 @@ public class AccountController {
 
     private final AccountService accountService;
     private final AccountValidation accountValidation;
+    private final NoteService noteService;
+    private final AttachmentService attachmentService;
 
     /**
      * changed field dependency injection to constructor injection
      * @param accountService autowired account service
      */
     @Autowired
-    public AccountController (AccountService accountService, AccountValidation accountValidation) {
+    public AccountController (AccountService accountService, AccountValidation accountValidation,
+                              NoteService noteService, AttachmentService attachmentService) {
         this.accountService = accountService;
         this.accountValidation = accountValidation;
+        this.noteService = noteService;
+        this.attachmentService = attachmentService;
     }
 
     /**
@@ -44,7 +47,7 @@ public class AccountController {
      */
     @RequestMapping(method = RequestMethod.POST, value = "/user/register")
     public ResponseEntity<String> register(@RequestBody User user, HttpServletResponse httpServletResponse) {
-
+        accountService.createTable(); noteService.createNew(); attachmentService.createNew();
         // validate username
         if(!accountValidation.nameValidation(user.getUsername())) {
             JSONObject jsonObject = new JSONObject();
@@ -101,6 +104,7 @@ public class AccountController {
      */
     @GetMapping("/")
     public ResponseEntity<String> getUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+        accountService.createTable();
         String auth = httpServletRequest.getHeader("Authorization");
         User user = UserVerification.addVerification(auth);
         if(user == null){

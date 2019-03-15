@@ -1,14 +1,20 @@
 package edu.neu.coe.csye6225.entity;
 
+import com.gitee.sunchenbin.mybatis.actable.annotation.Column;
+import com.gitee.sunchenbin.mybatis.actable.annotation.Table;
+import com.gitee.sunchenbin.mybatis.actable.command.BaseModel;
+import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class User implements Serializable {
-
+@Table(name="user")
+public class User extends BaseModel implements Serializable{
+    @Column(name="username", type = MySqlTypeConstant.VARCHAR, length = 100)
     private String username;
-
+    @Column(name = "password", type = MySqlTypeConstant.VARCHAR, length = 100)
     private String password;
 
     public String getUsername() {

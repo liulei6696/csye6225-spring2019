@@ -54,4 +54,16 @@
         attachmentId=#{attachmentId, jdbcType=VARCHAR}
     </select>
 
+    <update id="createNewTable" >
+        create table if not exists attachment (
+        attachmentId varchar (100),
+        noteId varchar (100),
+        url varchar (100),
+        fileSize int ,
+        fileType varchar (50),
+        fileName varchar (100),
+        eTag varchar (100)
+        )
+    </update>
+
 </mapper>

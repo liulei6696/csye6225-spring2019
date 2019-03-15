@@ -16,5 +16,5 @@ public interface UserMapper {
     int updateUser(User user);
     int insertUser(User user);
     int deleteUserByUsername(String username);
-
+    void createNewTable();
 }

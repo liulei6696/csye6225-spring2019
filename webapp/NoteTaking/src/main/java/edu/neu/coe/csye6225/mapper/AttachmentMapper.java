@@ -13,4 +13,5 @@ public interface AttachmentMapper{
     int updateAttachment(Attachment attachment);
     Attachment getAttachmentById(String attachmentId);
     List<Attachment>getAllAttachment(String noteId);
+    void createNewTable();
 }

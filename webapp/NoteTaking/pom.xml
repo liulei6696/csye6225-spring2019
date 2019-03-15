@@ -125,6 +125,13 @@
 			<version>2.6</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.gitee.sunchenbin.mybatis.actable</groupId>
+			<artifactId>mybatis-enhance-actable</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+
+
 
 	</dependencies>
 
