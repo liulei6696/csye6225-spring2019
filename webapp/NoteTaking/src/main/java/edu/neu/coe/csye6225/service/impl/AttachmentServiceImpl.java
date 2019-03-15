@@ -76,4 +76,8 @@ public class AttachmentServiceImpl implements AttachmentService {
             return false;
         return noteMapper.getNoteById(getAttachmentById(attId).getNoteId()).getUserId().equals(userId);
     }
+
+    public void createNew(){
+        attachmentMapper.createNewTable();
+    }
 }

@@ -38,4 +38,19 @@
         DELETE FROM user WHERE username = #{user.username}
     </delete>
 
+
+    <!--<select id="existTable" parameterType="String" resultType="Integer">-->
+		<!--select count(1)-->
+		<!--from sys.systables-->
+		<!--where LCASE(tablename)=#{tableName}-->
+	<!--</select>-->
+    
+    <update id="createNewTable" parameterType = "String">
+        create table if not exists user (
+        username varchar(100),
+        password varchar(100)
+        )
+    </update>
+
+
 </mapper>

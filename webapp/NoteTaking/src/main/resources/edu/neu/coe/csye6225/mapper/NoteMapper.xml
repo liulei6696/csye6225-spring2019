@@ -49,4 +49,15 @@
         noteId=#{noteId,jdbcType=VARCHAR}
     </delete>
 
+    <update id="createNewTable" parameterType="String">
+        create table if not exists note (
+        noteId varchar (100),
+        username varchar (100),
+        title varchar (100),
+        content varchar (255),
+        createTime varchar (100),
+        lastModifiedTime varchar (100)
+        )
+    </update>
+
 </mapper>

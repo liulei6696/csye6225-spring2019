@@ -132,4 +132,12 @@ public class NoteServiceImpl implements NoteService {
 
         return re;
     }
+
+    public void createNew() {
+        try {
+            noteMapper.createNewTable();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
