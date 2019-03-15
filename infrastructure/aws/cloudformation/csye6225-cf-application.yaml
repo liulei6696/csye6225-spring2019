@@ -5,8 +5,16 @@ Parameters:
     Type: String
   roleStackName:
     Type: String
+  S3BucketName:
+    Type: String
 
 Resources:
+  IAMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - CodeDeployEC2ServiceRole 
   WebappApplication: 
     Type: AWS::CodeDeploy::Application
     Properties:
@@ -82,10 +90,23 @@ Resources:
             VolumeType: gp2
             DeleteOnTermination: true
             VolumeSize: 20
+      IamInstanceProfile: !Ref IAMInstanceProfile
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-csye6225-ec2inst
 
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          sudo yum install mysql 
+          !Join 
+            - ""
+            - - "sudo service codedeploy-agent start \n"
+              - "sudo service codedeploy-agent status \n"
+              - "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://${MyRDSInstance.Endpoint.Address}:3306/csye6225\"' \n"
+              - "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"' \n"
+              - "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"' \n"
+              - "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dbucket.name=${S3BucketName}\"' \n"
 
 
 # DynamoDB Table
