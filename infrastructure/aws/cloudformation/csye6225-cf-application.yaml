@@ -79,7 +79,7 @@ Resources:
       KeyName: csye6225
       InstanceType: t2.micro
       DisableApiTermination: false
-      MapPublicIpOnLaunch: True
+      # MapPublicIpOnLaunch: True
       SecurityGroupIds:
         - !GetAtt WebSecurityGroup.GroupId
       SubnetId:

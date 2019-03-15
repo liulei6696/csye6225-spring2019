@@ -9,5 +9,6 @@ public interface AccountService {
     // User registration
     boolean signUp(User user);
 
-
+    // create table
+    void createTable();
 }
