@@ -1,11 +1,11 @@
 version: 0.0
 os: linux
 files:
-  - source: ./webapp/Notetaking/target/NoteTaking-0.0.1-SNAPSHOT.jar
+  - source: webapp/Notetaking/target/NoteTaking-0.0.1-SNAPSHOT.jar
     destination: /home/centos/
 hooks:
   ApplicationStart:
-    - location: ./applicationStart.sh
+    - location: applicationStart.sh
       timeout: 180
       runas: centos
   # AfterInstall:
