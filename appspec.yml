@@ -1,14 +1,28 @@
 version: 0.0
 os: linux
 files:
-  - source: webapp/NoteTaking/target/NoteTaking-0.0.1-SNAPSHOT.jar
-    destination: /home/centos/
+  - source: webapp/NoteTaking/target/NoteTaking.war
+    destination: /opt/tomcat/latest/webapps
+  - source: appspec.yml
+    destination: /home/centos
+  - source: applicationStart
+    destination: /home/centos
+  - source: appspec.yml
+    destination: /home/centos
 hooks:
   ApplicationStart:
     - location: applicationStart.sh
       timeout: 180
       runas: centos
-  # AfterInstall:
-  #  - location: ./afterInstall.sh
-  #    timeout: 300
-  #    runas: centos
+  AfterInstall:
+   - location: afterInstall.sh
+     timeout: 300
+     runas: centos
+  BeforeInstall:
+    - location: beforeInstall.sh
+      timeout: 300
+      runas: centos
+  ApplicationStop:
+    - location: applicationStop.sh
+      timeout: 300
+      runas: centos
