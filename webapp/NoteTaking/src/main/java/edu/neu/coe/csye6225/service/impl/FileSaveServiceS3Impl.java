@@ -2,7 +2,6 @@ package edu.neu.coe.csye6225.service.impl;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -37,7 +36,7 @@ public class FileSaveServiceS3Impl implements FileSaveService {
     @Autowired
     public FileSaveServiceS3Impl (String awsS3AudioBucket, AttachmentService attachmentService) {
         this.amazonS3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(new InstanceProfileCredentialsProvider())
+                .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
         this.awsS3AudioBucket = awsS3AudioBucket;
         this.attachmentService = attachmentService;
