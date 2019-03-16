@@ -7,9 +7,10 @@ import edu.neu.coe.csye6225.mapper.NoteMapper;
 import edu.neu.coe.csye6225.service.AttachmentService;
 import edu.neu.coe.csye6225.service.FileSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class AttachmentServiceImpl implements AttachmentService {
 
     @Autowired

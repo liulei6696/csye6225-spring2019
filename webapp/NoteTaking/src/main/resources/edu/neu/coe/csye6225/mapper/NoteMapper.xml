@@ -10,7 +10,7 @@
         <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
         <result column="lastModifiedTime" jdbcType="TIMESTAMP" property="lastModifiedTime" />
 
-    </resultMap>
+    </resultMap> 
 
 
     <select id="getAllNotes"  parameterType="String" resultMap="BaseResultMap">
