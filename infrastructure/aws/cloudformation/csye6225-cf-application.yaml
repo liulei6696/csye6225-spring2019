@@ -67,6 +67,10 @@ Resources:
         FromPort: 443
         IpProtocol: tcp
         ToPort: 443
+      - CidrIp: 0.0.0.0/0
+        FromPort: 8080
+        IpProtocol: tcp
+        ToPort: 8080
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-csye6225-websg

@@ -5,9 +5,13 @@ files:
     destination: /opt/tomcat/latest/webapps
   - source: appspec.yml
     destination: /home/centos
-  - source: applicationStart
+  - source: applicationStart.sh
     destination: /home/centos
-  - source: appspec.yml
+  - source: afterInstall.sh
+    destination: /home/centos
+  - source: applicationStop.sh
+    destination: /home/centos
+  - source: beforeInstall.sh
     destination: /home/centos
 hooks:
   ApplicationStart:
