@@ -7,9 +7,10 @@ import edu.neu.coe.csye6225.mapper.NoteMapper;
 import edu.neu.coe.csye6225.service.AttachmentService;
 import edu.neu.coe.csye6225.service.FileSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class AttachmentServiceImpl implements AttachmentService {
 
     @Autowired
@@ -72,6 +73,12 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Boolean attBelongToUser(String attId, String userId) {
+        if(getAttachmentById(attId) == null)
+            return false;
         return noteMapper.getNoteById(getAttachmentById(attId).getNoteId()).getUserId().equals(userId);
+    }
+
+    public void createNew(){
+        attachmentMapper.createNewTable();
     }
 }

@@ -1,0 +1,32 @@
+version: 0.0
+os: linux
+files:
+  - source: webapp/NoteTaking/target/NoteTaking.war
+    destination: /opt/tomcat/latest/webapps
+  - source: appspec.yml
+    destination: /home/centos
+  - source: applicationStart.sh
+    destination: /home/centos
+  - source: afterInstall.sh
+    destination: /home/centos
+  - source: applicationStop.sh
+    destination: /home/centos
+  - source: beforeInstall.sh
+    destination: /home/centos
+hooks:
+  ApplicationStart:
+    - location: applicationStart.sh
+      timeout: 180
+      runas: centos
+  AfterInstall:
+   - location: afterInstall.sh
+     timeout: 300
+     runas: centos
+  BeforeInstall:
+    - location: beforeInstall.sh
+      timeout: 300
+      runas: centos
+  ApplicationStop:
+    - location: applicationStop.sh
+      timeout: 300
+      runas: centos

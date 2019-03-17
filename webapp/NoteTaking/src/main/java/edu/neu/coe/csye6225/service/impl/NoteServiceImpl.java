@@ -1,10 +1,14 @@
 package edu.neu.coe.csye6225.service.impl;
 
+import edu.neu.coe.csye6225.entity.Attachment;
 import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.mapper.NoteMapper;
 import edu.neu.coe.csye6225.service.AccountService;
+import edu.neu.coe.csye6225.service.AttachmentService;
 import edu.neu.coe.csye6225.service.NoteService;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +21,7 @@ import java.util.List;
 public class NoteServiceImpl implements NoteService {
 
     @Autowired
-    private AccountService accountService;
+    private AttachmentService attachmentService;
 
     @Autowired
     private NoteMapper noteMapper;
@@ -100,6 +104,40 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public Boolean noteBelongToUser(String noteId, String userId) {
+        if(noteMapper.getNoteById(noteId) == null)
+            return false;
         return noteMapper.getNoteById(noteId).getUserId().equals(userId);
+    }
+
+    @Override
+    public JSONObject getNoteDetailWithAttachment(String noteId) {
+        JSONObject re = new JSONObject();
+        Note note = noteMapper.getNoteById(noteId);
+        re.put("id", note.getNoteId());
+        re.put("content", note.getContent());
+        re.put("title", note.getTitle());
+        re.put("created_on", note.getCreateTime());
+        re.put("last_updated_on", note.getLastModifiedTime());
+
+        // put attachments details
+        List<Attachment> attList = attachmentService.getAllAttachments(noteId);
+        JSONArray jsonArray = new JSONArray();
+        for (Attachment att : attList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("attachmentId", att.getAttachmentId());
+            jsonObject.put("url", att.getUrl());
+            jsonArray.add(jsonObject);
+        }
+        re.put("attachments", jsonArray);
+
+        return re;
+    }
+
+    public void createNew() {
+        try {
+            noteMapper.createNewTable();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -74,5 +74,14 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+    // create table
+    public void createTable () {
+        try {
+            this.userMapper.createNewTable();
+        } catch (Exception e) {
+            System.out.println("create again");
+        }
+    }
+
 
 }

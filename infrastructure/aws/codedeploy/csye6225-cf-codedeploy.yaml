@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  roleStackName:
+    Type: String
+
+Resource:
+WebappApplication: 
+  Type: AWS::CodeDeploy::Application
+  Properties:
+    ApplicationName: "csye6225-webapp"
+    ComputePlatform: Server
+
+
+WebappDeploymentGroup:
+  Type: AWS::CodeDeploy::DeploymentGroup
+  Properties:
+    ApplicationName: !Ref WebappApplication
+    AutoRollbackConfiguration:
+      Enabled: True
+      Events:
+        - "DEPLOYMENT_FAILURE"
+    DeploymentConfigName: "CodeDeployDefault.AllAtOnce"
+    DeploymentGroupName: "csye6225-webapp-deployment"
+    DeploymentStyle:
+      DeploymentType: "IN_PLACE"
+      DeploymentOption: "WITHOUT_TRAFFIC_CONTROL"
+    Ec2TagFilters:
+        - 
+          Key: 
+            "Name"
+          Value: 
+            !Sub ${AWS::StackName}-Ec2Instance
+          Type: 
+            "KEY_AND_VALUE"
+    ServiceRoleArn:
+      Fn::ImportValue:
+        !Sub ${roleStackName}-CodeDeployServiceRole-Arn
+
+

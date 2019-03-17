@@ -14,4 +14,5 @@ public interface NoteMapper {
     int insertNote(Note note);
     Note getNoteById(String noteId);
     List<Note>getAllNotes(String username);
+    void createNewTable();
 }

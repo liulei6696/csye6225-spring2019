@@ -1,0 +1,193 @@
+Parameters:
+  refStackName:
+    Type: String
+  amiId:
+    Type: String
+  roleStackName:
+    Type: String
+  S3BucketName:
+    Type: String
+
+Resources:
+  IAMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - CodeDeployEC2ServiceRole 
+  WebappApplication: 
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ApplicationName: "csye6225-webapp"
+      ComputePlatform: Server
+
+
+  WebappDeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: !Ref WebappApplication
+      AutoRollbackConfiguration:
+        Enabled: True
+        Events:
+          - "DEPLOYMENT_FAILURE"
+      DeploymentConfigName: "CodeDeployDefault.AllAtOnce"
+      DeploymentGroupName: "csye6225-webapp-deployment"
+      DeploymentStyle:
+        DeploymentType: "IN_PLACE"
+        DeploymentOption: "WITHOUT_TRAFFIC_CONTROL"
+      Ec2TagFilters:
+          - 
+            Key: 
+              "Name"
+            Value: 
+              !Sub ${AWS::StackName}-csye6225-ec2inst
+            Type: 
+              "KEY_AND_VALUE"
+      ServiceRoleArn:
+        Fn::ImportValue:
+          !Sub ${roleStackName}-CodeDeployServiceRole-Arn
+# Security Group for Web Servers
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${refStackName}-VPCID"
+      GroupDescription: Enable HTTP access svia user defined port
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 80
+        IpProtocol: tcp
+        ToPort: 80
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+      - CidrIp: 0.0.0.0/0
+        FromPort: 443
+        IpProtocol: tcp
+        ToPort: 443
+      - CidrIp: 0.0.0.0/0
+        FromPort: 8080
+        IpProtocol: tcp
+        ToPort: 8080
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-csye6225-websg
+
+# EC2 Instance
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Sub ${amiId}
+      KeyName: csye6225
+      InstanceType: t2.micro
+      DisableApiTermination: false
+      SecurityGroupIds:
+        - !GetAtt WebSecurityGroup.GroupId
+      SubnetId:
+        Fn::ImportValue: !Sub "${refStackName}-SUBNETAID"
+      BlockDeviceMappings: 
+        - DeviceName: /dev/sdm
+          Ebs: 
+            VolumeType: gp2
+            DeleteOnTermination: true
+            VolumeSize: 20
+      IamInstanceProfile: !Ref IAMInstanceProfile
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-csye6225-ec2inst
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          sudo su
+          echo '#!/bin/sh' > /opt/tomcat/latest/bin/setenv.sh 
+          chmod +x /opt/tomcat/latest/bin/setenv.sh 
+          echo 'JAVA_OPTS="$JAVA_OPTS -Dspring.profiles.active=prod"' >> /opt/tomcat/latest/bin/setenv.sh
+          echo 'JAVA_OPTS="$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://${MyRDSInstance.Endpoint.Address}:3306/csye6225"' >> /opt/tomcat/latest/bin/setenv.sh
+          echo 'JAVA_OPTS="$JAVA_OPTS -Dspring.datasource.username=csye6225master"' >> /opt/tomcat/latest/bin/setenv.sh
+          echo 'JAVA_OPTS="$JAVA_OPTS -Dspring.datasource.password=csye6225password"' >> /opt/tomcat/latest/bin/setenv.sh
+          echo 'JAVA_OPTS="$JAVA_OPTS -Daws.s3.audio.bucket=${S3BucketName}"' >> /opt/tomcat/latest/bin/setenv.sh
+          systemctl daemon-reload
+      # UserData:
+      #   Fn::Base64: !Sub |
+      #     #!/bin/bash -xe
+      #     sudo yum install mysql 
+      #     !Join 
+      #       - ""
+      #       - - "sudo service codedeploy-agent start \n"
+      #         - "sudo service codedeploy-agent status \n"
+      #         - "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://${MyRDSInstance.Endpoint.Address}:3306/csye6225\"' \n"
+      #         - "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"' \n"
+      #         - "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"' \n"
+      #         - "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dbucket.name=${S3BucketName}\"' \n"
+
+
+# DynamoDB Table
+  MyDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      -
+        AttributeName: "id"
+        AttributeType: "S"
+      KeySchema:
+      - 
+        AttributeName: "id"
+        KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-csye6225-dyndb
+
+# RDS Instance
+  MyRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: csye6225
+      Engine: MySQL
+      DBInstanceClass: db.t2.medium
+      MultiAZ: false
+      DBInstanceIdentifier: csye6225-spring2019
+      MasterUsername: csye6225master
+      MasterUserPassword: csye6225password
+      DBSubnetGroupName: !Ref myDBSubnetGroup
+      PubliclyAccessible: true
+      AllocatedStorage: 5
+      VPCSecurityGroups:
+      - !GetAtt DBEC2SecurityGroup.GroupId
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-csye6225-dyndb
+
+# subnet group for RDS instance
+  myDBSubnetGroup: 
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties: 
+      DBSubnetGroupDescription: "subnet group for RDS instance"
+      SubnetIds: 
+        - Fn::ImportValue: !Sub "${refStackName}-SUBNETAID"
+        - Fn::ImportValue: !Sub "${refStackName}-SUBNETBID"
+        - Fn::ImportValue: !Sub "${refStackName}-SUBNETCID"
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-csye6225-rdssubg
+
+# EC2 security group for RDS instance
+  DBEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Open database for access
+      VpcId: 
+        Fn::ImportValue:
+          !Sub "${refStackName}-VPCID"
+      SecurityGroupIngress:
+      - SourceSecurityGroupId: !Ref WebSecurityGroup
+        IpProtocol: tcp
+        FromPort: '3306'
+        ToPort: '3306'
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-csye6225-rdssg
