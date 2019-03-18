@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: webapp/NoteTaking/target/NoteTaking.war
+  - source: webapp/NoteTaking/target/ROOT.war
     destination: /opt/tomcat/latest/webapps
   - source: appspec.yml
     destination: /home/centos
