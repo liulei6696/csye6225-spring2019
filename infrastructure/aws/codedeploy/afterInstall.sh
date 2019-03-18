@@ -1,10 +1,10 @@
 #!/bin/bash
 sudo su
-sudo systemctl stop tomcat.service
+systemctl stop tomcat.service
 # sudo rm -rf /opt/tomcat/latest/webapps/*
-sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
+chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
 # cleanup log files
-sudo rm -rf /opt/tomcat/logs/catalina*
-sudo rm -rf /opt/tomcat/logs/*.log
-sudo rm -rf /opt/tomcat/logs/*.txt
+rm -rf /opt/tomcat/logs/catalina*
+rm -rf /opt/tomcat/logs/*.log
+rm -rf /opt/tomcat/logs/*.txt
 # sudo touch ai
