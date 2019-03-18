@@ -1,5 +1,5 @@
 sudo su
-systemctl daemon-reload
-service tomcat stop
+sudo systemctl daemon-reload
+sudo systemctl stop tomcat
 # rm -rf /opt/tomcat/latest/webapps/*
 # touch astop
