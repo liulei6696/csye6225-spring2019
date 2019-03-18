@@ -7,3 +7,4 @@ sudo chown tomcat:tomcat /opt/tomcat/webapps/NoteTaking.war
 sudo rm -rf /opt/tomcat/logs/catalina*
 sudo rm -rf /opt/tomcat/logs/*.log
 sudo rm -rf /opt/tomcat/logs/*.txt
+touch ai
