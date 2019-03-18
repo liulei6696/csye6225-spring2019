@@ -17,16 +17,16 @@ hooks:
   ApplicationStart:
     - location: applicationStart.sh
       timeout: 180
-      runas: centos
+      runas: root
   AfterInstall:
    - location: afterInstall.sh
      timeout: 300
-     runas: centos
+     runas: root
   BeforeInstall:
     - location: beforeInstall.sh
       timeout: 300
-      runas: centos
+      runas: root
   ApplicationStop:
     - location: applicationStop.sh
       timeout: 300
-      runas: centos
+      runas: root
