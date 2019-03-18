@@ -21,11 +21,11 @@ hooks:
   AfterInstall:
    - location: afterInstall.sh
      timeout: 300
-     runas: root
+     runas: tomcat
   BeforeInstall:
     - location: beforeInstall.sh
       timeout: 300
-      runas: root
+      runas: tomcat
   ApplicationStop:
     - location: applicationStop.sh
       timeout: 300
