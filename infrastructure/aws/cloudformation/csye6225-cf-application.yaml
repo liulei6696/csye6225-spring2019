@@ -9,12 +9,12 @@ Parameters:
     Type: String
 
 Resources:
-  IAMInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: "/"
-      Roles:
-        - CodeDeployEC2ServiceRole 
+  # IAMInstanceProfile:
+  #   Type: AWS::IAM::InstanceProfile
+  #   Properties:
+  #     Path: "/"
+  #     Roles:
+  #       - CodeDeployEC2ServiceRole 
   WebappApplication: 
     Type: AWS::CodeDeploy::Application
     Properties:
@@ -93,7 +93,9 @@ Resources:
             VolumeType: gp2
             DeleteOnTermination: true
             VolumeSize: 20
-      IamInstanceProfile: !Ref IAMInstanceProfile
+      IamInstanceProfile: 
+        Fn::ImportValue:
+          !Sub "${roleStackName}-Ec2InstanceProfile"
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-csye6225-ec2inst
