@@ -84,7 +84,7 @@ public class FileSaveServiceS3Impl implements FileSaveService {
             return new Attachment(noteId, url.toString(), multipartFile.getSize(), fileType, fileName, etag);
 
         } catch (IOException | AmazonS3Exception e) {
-            logger.error("error [" + e.getMessage() + "] occurred while uploading [" + fileName + "] ");
+            logger.error("error [" + e.getMessage() + "] occurred while uploading [" + fileName + "] to " + awsS3AudioBucket);
             return null;
         }
     }

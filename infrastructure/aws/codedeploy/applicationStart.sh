@@ -1,4 +1,6 @@
 #!/bin/bash
-sudo su
-systemctl daemon-reload
-sudo service tomcat start
+# sudo su
+# sudo systemctl daemon-reload
+sudo systemctl start tomcat
+# sudo service tomcat start
+# touch astar
