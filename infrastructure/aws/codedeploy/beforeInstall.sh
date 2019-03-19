@@ -4,5 +4,5 @@
 
 # sudo su
 # whoami
-sudo rm -rf /opt/tomcat/latest/webapps/*
+sudo rm -rf /opt/tomcat/apache-tomcat-9.0.16/webapps/*
 sudo touch bi
