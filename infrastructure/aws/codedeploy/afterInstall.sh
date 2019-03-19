@@ -1,6 +1,6 @@
 #!/bin/bash
 # sudo su
-sudo systemctl stop tomcat.service
+# sudo systemctl stop tomcat.service
 # sudo rm -rf /opt/tomcat/latest/webapps/*
 sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
 # cleanup log files
