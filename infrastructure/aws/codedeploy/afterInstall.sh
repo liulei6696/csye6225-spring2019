@@ -7,4 +7,5 @@ sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
 sudo rm -rf /opt/tomcat/logs/catalina*
 sudo rm -rf /opt/tomcat/logs/*.log
 sudo rm -rf /opt/tomcat/logs/*.txt
+sudo systemctl restart tomcat
 # sudo touch ai
