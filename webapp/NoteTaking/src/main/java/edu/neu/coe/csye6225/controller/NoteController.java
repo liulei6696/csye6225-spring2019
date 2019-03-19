@@ -42,7 +42,7 @@ public class NoteController {
      * which is noteId, title and lastModifiedDate
      *
      */
-    @GetMapping("/note")
+    @GetMapping("/noteziyan")
     public ResponseEntity<String> getAllNotes(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
