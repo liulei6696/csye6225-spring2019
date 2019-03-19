@@ -36,7 +36,7 @@ public class FileSaveServiceS3Impl implements FileSaveService {
     @Autowired
     public FileSaveServiceS3Impl (String awsS3AudioBucket, AttachmentService attachmentService) {
         this.amazonS3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(new InstanceProfileCredentialsProvider(true))
+                .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
         this.awsS3AudioBucket = awsS3AudioBucket;
         this.attachmentService = attachmentService;
