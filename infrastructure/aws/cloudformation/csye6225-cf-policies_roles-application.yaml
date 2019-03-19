@@ -91,9 +91,7 @@ Resources:
           Statement:
             -
               Effect: "Allow"
-              Action:
-               - "s3:Get*"
-               - "s3:List*"
+              Action: "s3:*"
               Resource: "*"
         Roles:
           - !Ref "CodeDeployEC2ServiceRole"
