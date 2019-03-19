@@ -80,7 +80,7 @@ public class NoteController {
      * get note by id in the path
      *
      */
-    @GetMapping("/noteziyan/{id}")
+    @GetMapping("/note/{id}")
     public ResponseEntity<String> getNoteById(@PathVariable("id") String noteId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
@@ -115,7 +115,7 @@ public class NoteController {
      * create a new note using default structure
      *
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/noteziyan")
+    @RequestMapping(method = RequestMethod.POST, value = "/note")
     public ResponseEntity<String> createNote(@RequestBody Note uploadedNote,
                                              HttpServletRequest httpServletRequest,
                                              HttpServletResponse httpServletResponse) throws IOException {
@@ -201,7 +201,7 @@ public class NoteController {
      * delete note by id
      *
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/noteziyan/{id}")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/note/{id}")
     public ResponseEntity<String> deleteNote(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PathVariable("id") String noteId) throws IOException {
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
