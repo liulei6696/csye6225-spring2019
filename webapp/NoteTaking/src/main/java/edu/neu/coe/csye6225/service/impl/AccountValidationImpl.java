@@ -5,6 +5,8 @@ import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.mapper.UserMapper;
 import edu.neu.coe.csye6225.service.AccountValidation;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.regex.Matcher;
@@ -15,6 +17,7 @@ public class AccountValidationImpl implements AccountValidation {
 
     @Autowired
     private UserMapper userMapper;
+    private static final Logger logger = LoggerFactory.getLogger(AccountValidationImpl.class);
 
     public AccountValidationImpl() {
     }
@@ -29,7 +32,7 @@ public class AccountValidationImpl implements AccountValidation {
             flag = matcher.matches();
         } catch (Exception e) {
             flag = false;
-            System.out.println("Username must be a valid email address!");
+            logger.info("Username must be a valid email address!");
         }
         return flag;
     }

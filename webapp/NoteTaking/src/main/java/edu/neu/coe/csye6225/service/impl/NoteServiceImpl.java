@@ -9,6 +9,8 @@ import edu.neu.coe.csye6225.service.AttachmentService;
 import edu.neu.coe.csye6225.service.NoteService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +27,13 @@ public class NoteServiceImpl implements NoteService {
 
     @Autowired
     private NoteMapper noteMapper;
+    private static final Logger logger = LoggerFactory.getLogger(NoteServiceImpl.class);
 
     @Override
     public Note createNote(User user) {
         Note note = new Note(user.getUsername(), "Title of the note", "Content of the note");
         if(noteMapper.insertNote(note) > 0) {
-            System.out.println("Note created for user: " + user.getUsername());
+            logger.info("Note created for user: " + user.getUsername());
             return note;
         } else return null;
     }
@@ -42,15 +45,15 @@ public class NoteServiceImpl implements NoteService {
         String noteUserId = note.getUserId();
         if (user.getUsername().equals(noteUserId)) {
             if(noteMapper.deleteNote(note)) {
-                System.out.println("Note deleted!");
+                logger.info("Note deleted!");
                 return true;
             } else {
-                System.out.println("Fail to delete!");
+                logger.info("Fail to delete!");
                 return false;
             }
 
         }
-        System.out.println("No authorization to this note! Fail to delete!");
+        logger.info("No authorization to this note! Fail to delete!");
         return false;
 
     }
@@ -58,22 +61,22 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public Note updateNote(User user,Note note) {
         if (note == null) {
-            System.out.println("Please specify the note you want to update!");
+            logger.info("Please specify the note you want to update!");
             return null;
         }
         Note realNote = noteMapper.getNoteById(note.getNoteId());
         if (user.getUsername().equals(realNote.getUserId())) {
             note.setLastModifiedTime();
             if(noteMapper.updateNote(note) > 0) {
-                System.out.println("Note updated!");
+                logger.info("Note updated!");
                 return noteMapper.getNoteById(note.getNoteId());
             } else {
-                System.out.println("Fail to update!");
+                logger.info("Fail to update!");
                 return null;
             }
 
         }
-        System.out.println("No authorization to this note! Fail to delete!");
+        logger.info("No authorization to this note! Fail to delete!");
         return null;
     }
 
@@ -84,10 +87,10 @@ public class NoteServiceImpl implements NoteService {
         String noteUserId = note.getUserId();
         if (user.getUsername().equals(noteUserId)) {
             note = noteMapper.getNoteById(noteId);
-            System.out.println("Get note successfully!");
+            logger.info("Get note successfully!");
             return note;
         } else {
-            System.out.println("No authorization to this note! Fail to get!");
+            logger.info("No authorization to this note! Fail to get!");
             return null;
         }
 
