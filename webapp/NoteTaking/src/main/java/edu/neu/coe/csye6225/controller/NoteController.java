@@ -46,7 +46,7 @@ public class NoteController {
      * which is noteId, title and lastModifiedDate
      *
      */
-    @GetMapping("/note")
+    @GetMapping("/noteziyan")
     public ResponseEntity<String> getAllNotes(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         statsd.incrementCounter("bar");
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
@@ -84,7 +84,7 @@ public class NoteController {
      * get note by id in the path
      *
      */
-    @GetMapping("/note/{id}")
+    @GetMapping("/noteziyan/{id}")
     public ResponseEntity<String> getNoteById(@PathVariable("id") String noteId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         statsd.incrementCounter("bar");
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
@@ -119,7 +119,7 @@ public class NoteController {
      * create a new note using default structure
      *
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/note")
+    @RequestMapping(method = RequestMethod.POST, value = "/noteziyan")
     public ResponseEntity<String> createNote(@RequestBody Note uploadedNote,
                                              HttpServletRequest httpServletRequest,
                                              HttpServletResponse httpServletResponse) throws IOException {
@@ -207,7 +207,7 @@ public class NoteController {
      * delete note by id
      *
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/note/{id}")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/noteziyan/{id}")
     public ResponseEntity<String> deleteNote(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PathVariable("id") String noteId) throws IOException {
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
