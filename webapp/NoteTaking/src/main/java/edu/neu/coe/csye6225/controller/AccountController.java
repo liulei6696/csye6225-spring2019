@@ -29,7 +29,7 @@ public class AccountController {
     private final AccountValidation accountValidation;
     private final NoteService noteService;
     private final AttachmentService attachmentService;
-    private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "statsd-host", 8125);
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "localhost", 8125);
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     /**
