@@ -17,6 +17,8 @@ import java.util.Date;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import com.timgroup.statsd.StatsDClient;
+import com.timgroup.statsd.NonBlockingStatsDClient;
 
 @RestController
 public class AccountController {
@@ -25,6 +27,7 @@ public class AccountController {
     private final AccountValidation accountValidation;
     private final NoteService noteService;
     private final AttachmentService attachmentService;
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "statsd-host", 8125);
 
     /**
      * changed field dependency injection to constructor injection
@@ -48,6 +51,7 @@ public class AccountController {
     @RequestMapping(method = RequestMethod.POST, value = "/user/register")
     public ResponseEntity<String> register(@RequestBody User user, HttpServletResponse httpServletResponse) {
         accountService.createTable(); noteService.createNew(); attachmentService.createNew();
+        statsd.incrementCounter("bar");
         // validate username
         if(!accountValidation.nameValidation(user.getUsername())) {
             JSONObject jsonObject = new JSONObject();
@@ -105,6 +109,7 @@ public class AccountController {
     @GetMapping("/")
     public ResponseEntity<String> getUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         accountService.createTable();
+        statsd.incrementCounter("bar");
         String auth = httpServletRequest.getHeader("Authorization");
         User user = UserVerification.addVerification(auth);
         if(user == null){

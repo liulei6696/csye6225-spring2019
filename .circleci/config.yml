@@ -5,7 +5,7 @@ jobs:
       - image: circleci/openjdk:8-jdk
     branches:
       only:
-       - assignment5
+       - master
     steps:
       - checkout
 
@@ -38,7 +38,8 @@ jobs:
             pwd
             mkdir -p codedeploy_artifact
             cp infrastructure/aws/codedeploy/*.sh .
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/NoteTaking/target/ROOT.war *.sh *.yml
+            cp infrastructure/aws/cloudwatch/* .
+            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/NoteTaking/target/ROOT.war *.sh *.yml *.json
             mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
             cd codedeploy_artifact
             ls -al
