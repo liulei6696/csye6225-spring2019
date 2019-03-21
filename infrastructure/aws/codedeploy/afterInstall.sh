@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo su
+# sudo su
 # sudo systemctl stop tomcat.service
 sudo service awslogs stop
 sudo chown tomcat:tomcat /opt/tomcat/latest/webapps/ROOT.war
