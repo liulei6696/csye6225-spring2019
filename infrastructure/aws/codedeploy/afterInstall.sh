@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo su
+# sudo su
 # sudo systemctl stop tomcat.service
 sudo service awslogs stop
 sudo chown tomcat:tomcat /opt/tomcat/latest/webapps/ROOT.war
@@ -13,7 +13,7 @@ sudo systemctl restart tomcat
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
     -a fetch-config \
     -m ec2 \
-    -c file:/opt/tomcat/latest/webapps/cloudwatch-config.json \
+    -c file:/home/centos/amazon-cloudwatch-agent.json \
     -s
 # sudo touch ai
 

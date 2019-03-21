@@ -54,7 +54,7 @@ public class AccountController {
     @RequestMapping(method = RequestMethod.POST, value = "/user/register")
     public ResponseEntity<String> register(@RequestBody User user, HttpServletResponse httpServletResponse) {
         accountService.createTable(); noteService.createNew(); attachmentService.createNew();
-        statsd.incrementCounter("bar");
+        statsd.incrementCounter("endpoint.userRegister.http.post");
         // validate username
         if(!accountValidation.nameValidation(user.getUsername())) {
             JSONObject jsonObject = new JSONObject();
@@ -117,7 +117,7 @@ public class AccountController {
     @GetMapping("/")
     public ResponseEntity<String> getUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         accountService.createTable();
-        statsd.incrementCounter("bar");
+        statsd.incrementCounter("endpoint.homepage.http.get");
         String auth = httpServletRequest.getHeader("Authorization");
         User user = UserVerification.addVerification(auth);
         if(user == null){

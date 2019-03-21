@@ -29,7 +29,7 @@ public class AttachmentController {
     private final AccountService accountService;
     private final AttachmentService attachmentService;
     private final FileSaveService fileSaveService;
-    private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "statsd-host", 8125);
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "localhost", 8125);
 
     @Autowired
     public AttachmentController(NoteService noteService, AccountService accountService,
@@ -75,7 +75,7 @@ public class AttachmentController {
                                                           HttpServletResponse httpServletResponse) throws IOException {
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
-        statsd.incrementCounter("bar");
+        statsd.incrementCounter("endpoint.attachments.http.get");
 
         if (user == null) {
             return QuickResponse.userUnauthorized(httpServletResponse);
@@ -118,7 +118,7 @@ public class AttachmentController {
                                                          HttpServletRequest httpServletRequest,
                                                          HttpServletResponse httpServletResponse) throws IOException {
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
-        statsd.incrementCounter("bar");
+        statsd.incrementCounter("endpoint.note.http.post");
 
         if (user == null)
             return QuickResponse.userUnauthorized(httpServletResponse);
@@ -159,7 +159,7 @@ public class AttachmentController {
                                                    HttpServletRequest httpServletRequest,
                                                    HttpServletResponse httpServletResponse) throws IOException {
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
-        statsd.incrementCounter("bar");
+        statsd.incrementCounter("endpoint.attachmentsId.http.get");
 
         if (user == null) {
             return QuickResponse.userUnauthorized(httpServletResponse);
@@ -210,7 +210,7 @@ public class AttachmentController {
                                                    HttpServletRequest httpServletRequest,
                                                    HttpServletResponse httpServletResponse) throws IOException {
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
-        statsd.incrementCounter("bar");
+        statsd.incrementCounter("endpoint.attachmentId.http.delete");
 
         if (user == null) {
             return QuickResponse.userUnauthorized(httpServletResponse);
