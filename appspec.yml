@@ -13,6 +13,8 @@ files:
     destination: /home/centos
   - source: beforeInstall.sh
     destination: /home/centos
+  - source: amazon-cloudwatch-agent.json
+    destination: /home/centos
 hooks:
   ApplicationStart:
     - location: applicationStart.sh

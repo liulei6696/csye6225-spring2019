@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.List;
 
 import static javax.servlet.http.HttpServletResponse.*;
+import com.timgroup.statsd.StatsDClient;
+import com.timgroup.statsd.NonBlockingStatsDClient;
+
 
 @RestController
 public class NoteController {
@@ -28,6 +31,7 @@ public class NoteController {
     private final AccountService accountService;
     private final NoteService noteService;
     private final AttachmentService attachmentService;
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "localhost", 8125);
 
     @Autowired
     public NoteController(AccountService accountService, NoteService noteService, AttachmentService attachmentService) {
@@ -42,9 +46,9 @@ public class NoteController {
      * which is noteId, title and lastModifiedDate
      *
      */
-    @GetMapping("/noteziyan")
+    @GetMapping("/note")
     public ResponseEntity<String> getAllNotes(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
-
+        statsd.incrementCounter("endpoint.note.http.get");
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
 
         if (user == null) {
@@ -82,7 +86,7 @@ public class NoteController {
      */
     @GetMapping("/note/{id}")
     public ResponseEntity<String> getNoteById(@PathVariable("id") String noteId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
-
+        statsd.incrementCounter("endpoint.noteId.http.get");
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
 
         if (user == null) {
@@ -121,6 +125,7 @@ public class NoteController {
                                              HttpServletResponse httpServletResponse) throws IOException {
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
+        statsd.incrementCounter("endpoint.note.http.post");
 
         if (user == null) {
             return QuickResponse.userUnauthorized(httpServletResponse);
@@ -163,6 +168,7 @@ public class NoteController {
                                              @RequestBody Note updatedNote) throws IOException{
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
+        statsd.incrementCounter("endpoint.noteId.http.put");
 
         if (user == null) {
             return QuickResponse.userUnauthorized(httpServletResponse);
@@ -205,6 +211,7 @@ public class NoteController {
     public ResponseEntity<String> deleteNote(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PathVariable("id") String noteId) throws IOException {
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
+        statsd.incrementCounter("endpoint.noteId.http.delete");
         JSONObject resultJson = new JSONObject();
         if (user == null) {
             return QuickResponse.userUnauthorized(httpServletResponse);

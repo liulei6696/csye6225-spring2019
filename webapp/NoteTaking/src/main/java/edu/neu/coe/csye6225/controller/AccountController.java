@@ -4,6 +4,8 @@ import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.service.*;
 import edu.neu.coe.csye6225.util.QuickResponse;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import java.util.Date;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import com.timgroup.statsd.StatsDClient;
+import com.timgroup.statsd.NonBlockingStatsDClient;
 
 @RestController
 public class AccountController {
@@ -25,6 +29,8 @@ public class AccountController {
     private final AccountValidation accountValidation;
     private final NoteService noteService;
     private final AttachmentService attachmentService;
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "statsd-host", 8125);
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     /**
      * changed field dependency injection to constructor injection
@@ -48,12 +54,14 @@ public class AccountController {
     @RequestMapping(method = RequestMethod.POST, value = "/user/register")
     public ResponseEntity<String> register(@RequestBody User user, HttpServletResponse httpServletResponse) {
         accountService.createTable(); noteService.createNew(); attachmentService.createNew();
+        statsd.incrementCounter("endpoint.userRegister.http.post");
         // validate username
         if(!accountValidation.nameValidation(user.getUsername())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "register failed");
             jsonObject.put("cause", "username not valid");
             httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+            logger.warn("user register failed, " + "  reason: [ username not valid ]");
             return ResponseEntity.badRequest()
                     .body(jsonObject.toString());
         }
@@ -64,6 +72,7 @@ public class AccountController {
             jsonObject.put("message", "register failed");
             jsonObject.put("cause", "password not strong enough");
             httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+            logger.warn("user register failed, " + "  reason: [ password not strong ]");
             return ResponseEntity.badRequest()
                     .body(jsonObject.toString());
         }
@@ -74,6 +83,7 @@ public class AccountController {
             jsonObject.put("message", "register failed");
             jsonObject.put("cause", "user already registered");
             httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
+            logger.warn("user register failed, " + "  reason: [ user already exist ]");
             return ResponseEntity.badRequest()
                     .body(jsonObject.toString());
         }
@@ -83,12 +93,14 @@ public class AccountController {
             JSONObject jsonObject = new JSONObject();
             httpServletResponse.setHeader("status", String.valueOf(HttpStatus.OK));
             jsonObject.put("message", "register success");
+            logger.info("user register success, " + " [ welcome ]");
             return ResponseEntity.ok()
                     .body(jsonObject.toString());
         }else {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "register failed!");
             jsonObject.put("cause", "unkown");
+            logger.warn("user register failed, " + "  reason: [ unknown ]");
             return ResponseEntity.badRequest()
                     .body(jsonObject.toString());
         }
@@ -105,6 +117,7 @@ public class AccountController {
     @GetMapping("/")
     public ResponseEntity<String> getUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         accountService.createTable();
+        statsd.incrementCounter("endpoint.homepage.http.get");
         String auth = httpServletRequest.getHeader("Authorization");
         User user = UserVerification.addVerification(auth);
         if(user == null){
@@ -114,7 +127,9 @@ public class AccountController {
             JSONObject jsonObject = new JSONObject();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             httpServletResponse.setHeader("status", String.valueOf(SC_OK));
-            jsonObject.put("date", df.format(new Date()));
+            String date = df.format(new Date());
+            jsonObject.put("date", date);
+            logger.info("user logged in, returned server time : [ " + date + " ]. ");
             return ResponseEntity.ok()
                     .body(jsonObject.toString());
         }else {
