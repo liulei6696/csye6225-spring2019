@@ -2,6 +2,7 @@
 # sudo su
 # sudo systemctl stop tomcat.service
 # sudo rm -rf /opt/tomcat/latest/webapps/*
+sudo service awslogs stop
 sudo chown tomcat:tomcat /opt/tomcat/latest/webapps/ROOT.war
 # cleanup log files
 sudo rm -rf /opt/tomcat/latest/logs/catalina*
