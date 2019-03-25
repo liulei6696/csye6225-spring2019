@@ -64,7 +64,7 @@ public class FileSaveServiceS3Impl implements FileSaveService {
 
         try {
             // creating the file in the server (temporarily)
-            File file = new File(fileName);
+            File file = new File("/tmp/"+fileName);
 
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(multipartFile.getBytes());
