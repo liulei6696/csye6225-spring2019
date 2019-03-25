@@ -7,6 +7,8 @@ Parameters:
     Type: String
   S3BucketName:
     Type: String
+  TopicName:
+    Type: String
 
 Resources:
   # IAMInstanceProfile:
@@ -143,6 +145,20 @@ Resources:
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-csye6225-dyndb
+  
+  EmailDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: email_address
+        AttributeType: S
+      KeySchema:
+      - AttributeName: email_address
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      TableName: email_token
 
 # RDS Instance
   MyRDSInstance:
@@ -193,3 +209,10 @@ Resources:
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-csye6225-rdssg
+
+#SNS Topic
+  MySNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName:
+        Ref: TopicName
