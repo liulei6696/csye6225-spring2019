@@ -1,5 +1,9 @@
 package edu.neu.coe.csye6225.controller;
 
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
+import com.amazonaws.services.sns.model.SubscribeRequest;
+import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.service.*;
 import edu.neu.coe.csye6225.util.QuickResponse;
@@ -19,6 +23,7 @@ import java.util.Date;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+
 import com.timgroup.statsd.StatsDClient;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 
@@ -27,6 +32,7 @@ public class AccountController {
 
     private final AccountService accountService;
     private final AccountValidation accountValidation;
+    private AmazonSNSClientService amazonSNSClientService;
     private final NoteService noteService;
     private final AttachmentService attachmentService;
     private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "localhost", 8125);
@@ -34,29 +40,34 @@ public class AccountController {
 
     /**
      * changed field dependency injection to constructor injection
+     *
      * @param accountService autowired account service
      */
     @Autowired
-    public AccountController (AccountService accountService, AccountValidation accountValidation,
-                              NoteService noteService, AttachmentService attachmentService) {
+    public AccountController(AccountService accountService, AccountValidation accountValidation,
+                             NoteService noteService, AttachmentService attachmentService, AmazonSNSClientService amazonSNSClientService) {
         this.accountService = accountService;
         this.accountValidation = accountValidation;
         this.noteService = noteService;
         this.attachmentService = attachmentService;
+        this.amazonSNSClientService = amazonSNSClientService;
     }
 
     /**
      * controller for user register "/user/register"
-     * @param user request body in json
+     *
+     * @param user                request body in json
      * @param httpServletResponse response
      * @return response body in json
      */
     @RequestMapping(method = RequestMethod.POST, value = "/user/register")
     public ResponseEntity<String> register(@RequestBody User user, HttpServletResponse httpServletResponse) {
-        accountService.createTable(); noteService.createNew(); attachmentService.createNew();
+        accountService.createTable();
+        noteService.createNew();
+        attachmentService.createNew();
         statsd.incrementCounter("endpoint.userRegister.http.post");
         // validate username
-        if(!accountValidation.nameValidation(user.getUsername())) {
+        if (!accountValidation.nameValidation(user.getUsername())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "register failed");
             jsonObject.put("cause", "username not valid");
@@ -67,7 +78,7 @@ public class AccountController {
         }
 
         // validate password
-        else if(!accountValidation.isPasswordStrong(user.getPassword())) {
+        else if (!accountValidation.isPasswordStrong(user.getPassword())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "register failed");
             jsonObject.put("cause", "password not strong enough");
@@ -78,7 +89,7 @@ public class AccountController {
         }
 
         // validate if user already registered
-        else if(accountValidation.isUserRegistered(user)) {
+        else if (accountValidation.isUserRegistered(user)) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "register failed");
             jsonObject.put("cause", "user already registered");
@@ -89,14 +100,14 @@ public class AccountController {
         }
 
         // sign up into database
-        else if(accountService.signUp(user)){
+        else if (accountService.signUp(user)) {
             JSONObject jsonObject = new JSONObject();
             httpServletResponse.setHeader("status", String.valueOf(HttpStatus.OK));
             jsonObject.put("message", "register success");
             logger.info("user register success, " + " [ welcome ]");
             return ResponseEntity.ok()
                     .body(jsonObject.toString());
-        }else {
+        } else {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "register failed!");
             jsonObject.put("cause", "unkown");
@@ -109,7 +120,8 @@ public class AccountController {
 
     /**
      * controller for mapping "/"
-     * @param httpServletRequest verification info
+     *
+     * @param httpServletRequest  verification info
      * @param httpServletResponse response message
      * @return current date if username and password is correct
      * @throws IOException by sendError()
@@ -120,10 +132,10 @@ public class AccountController {
         statsd.incrementCounter("endpoint.homepage.http.get");
         String auth = httpServletRequest.getHeader("Authorization");
         User user = UserVerification.addVerification(auth);
-        if(user == null){
+        if (user == null) {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
-        if(accountService.logIn(user)){
+        if (accountService.logIn(user)) {
             JSONObject jsonObject = new JSONObject();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             httpServletResponse.setHeader("status", String.valueOf(SC_OK));
@@ -132,9 +144,40 @@ public class AccountController {
             logger.info("user logged in, returned server time : [ " + date + " ]. ");
             return ResponseEntity.ok()
                     .body(jsonObject.toString());
-        }else {
+        } else {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
 
+    }
+
+    /**
+     * create a new note using default structure
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/reset")
+    public ResponseEntity<String> resetPassword(@RequestBody User userWithEmail,
+                                                HttpServletRequest httpServletRequest,
+                                                HttpServletResponse httpServletResponse) throws IOException {
+
+        User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
+        statsd.incrementCounter("endpoint.note.http.post");
+
+        if (user == null) {
+            return QuickResponse.userUnauthorized(httpServletResponse);
+        }
+        String email = userWithEmail.getUsername();
+        // if missing content or title
+        if (email == null || email == "")
+            return QuickResponse.quickBadRequestConstruct(httpServletResponse, "email address missing");
+
+        if (accountService.logIn(user)) {
+//            amazonSNSClientService.createSubscription(email);
+            amazonSNSClientService.publishMessagetoTopic(email);
+            JSONObject resultJson = new JSONObject();
+            httpServletResponse.setHeader("status", String.valueOf(HttpStatus.CREATED));
+            return ResponseEntity.ok()
+                    .body("");
+        } else {
+            return QuickResponse.userUnauthorized(httpServletResponse);
+        }
     }
 }
