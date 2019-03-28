@@ -1,6 +1,5 @@
 package edu.neu.coe.csye6225.controller;
 import edu.neu.coe.csye6225.entity.Attachment;
-import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.service.*;
 import edu.neu.coe.csye6225.util.QuickResponse;
@@ -14,9 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static javax.servlet.http.HttpServletResponse.*;
 import com.timgroup.statsd.StatsDClient;
@@ -28,17 +25,17 @@ public class AttachmentController {
     private final NoteService noteService;
     private final AccountService accountService;
     private final AttachmentService attachmentService;
-    private final FileSaveService fileSaveService;
+    private final FileService fileService;
     private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "localhost", 8125);
 
     @Autowired
     public AttachmentController(NoteService noteService, AccountService accountService,
                                 AttachmentService attachmentService,
-                                FileSaveService fileSaveService) {
+                                FileService fileService) {
         this.noteService = noteService;
         this.accountService = accountService;
         this.attachmentService = attachmentService;
-        this.fileSaveService = fileSaveService;
+        this.fileService = fileService;
     }
 
 //    @PostMapping
@@ -130,7 +127,7 @@ public class AttachmentController {
             if (!noteService.noteBelongToUser(noteId, user.getUsername())) {
                 return QuickResponse.userNoAccess(httpServletResponse);
             } else {
-                Attachment attachment = fileSaveService.saveFile(noteId, file);
+                Attachment attachment = fileService.saveFile(noteId, file);
                 if (attachment == null) {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("message", "upload file error");
@@ -182,7 +179,7 @@ public class AttachmentController {
                         .body(jsonObject.toString());
             }
 
-            Attachment att = fileSaveService.saveFile(noteId, file);
+            Attachment att = fileService.saveFile(noteId, file);
 
             if(att == null) {
                 return QuickResponse.quickBadRequestConstruct(httpServletResponse, "file saving error");
@@ -223,7 +220,7 @@ public class AttachmentController {
             if(!attachmentService.attBelongToUser(attachmentId, user.getUsername())){
                 return QuickResponse.userNoAccess(httpServletResponse);
             }
-            if(fileSaveService.deleteFile(attachmentId)) {
+            if(fileService.deleteFile(attachmentId)) {
                 if (attachmentService.deleteAttachment(attachmentId) != null){
                     // success, delete file and attachment data in database
                     return ResponseEntity.noContent().build();
