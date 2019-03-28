@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
@@ -154,30 +155,25 @@ public class AccountController {
      * create a new note using default structure
      */
     @RequestMapping(method = RequestMethod.POST, value = "/reset")
-    public ResponseEntity<String> resetPassword(@RequestBody User userWithEmail,
-                                                HttpServletRequest httpServletRequest,
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> resetEmail,
                                                 HttpServletResponse httpServletResponse) throws IOException {
 
-        User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
+//        User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
         statsd.incrementCounter("endpoint.note.http.post");
 
-        if (user == null) {
-            return QuickResponse.userUnauthorized(httpServletResponse);
+        if (resetEmail == null) {
+            return QuickResponse.quickBadRequestConstruct(httpServletResponse, "Request body empty");
         }
-        String email = userWithEmail.getUsername();
-        // if missing content or title
-        if (email == null || email == "")
+
+        String email = resetEmail.get("email"); // could be null
+        // if missing email
+        if (email == null || email.equals(""))
             return QuickResponse.quickBadRequestConstruct(httpServletResponse, "email address missing");
 
-        if (accountService.logIn(user)) {
-//            amazonSNSClientService.createSubscription(email);
-            amazonSNSClientService.publishMessagetoTopic(email);
-            JSONObject resultJson = new JSONObject();
-            httpServletResponse.setHeader("status", String.valueOf(HttpStatus.CREATED));
-            return ResponseEntity.ok()
-                    .body("");
-        } else {
-            return QuickResponse.userUnauthorized(httpServletResponse);
-        }
+        amazonSNSClientService.publishMessagetoTopic(email);
+
+        httpServletResponse.setHeader("status", String.valueOf(HttpStatus.CREATED));
+        return ResponseEntity.ok()
+                .body("");
     }
 }
