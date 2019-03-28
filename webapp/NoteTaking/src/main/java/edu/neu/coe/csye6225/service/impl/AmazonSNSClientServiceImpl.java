@@ -9,11 +9,13 @@ import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
-import com.amazonaws.services.sns.model.SubscribeRequest;
 import edu.neu.coe.csye6225.service.AmazonSNSClientService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class AmazonSNSClientServiceImpl implements AmazonSNSClientService {
@@ -23,6 +25,8 @@ public class AmazonSNSClientServiceImpl implements AmazonSNSClientService {
     private String topicArn;
     @Value("${domain.name}")
     private String domainName;
+
+    private static final Logger logger = LoggerFactory.getLogger(AmazonSNSClientServiceImpl.class);
 
     @Autowired
     public AmazonSNSClientServiceImpl()
@@ -51,7 +55,7 @@ public class AmazonSNSClientServiceImpl implements AmazonSNSClientService {
         final PublishResult publishResponse = this.amazonSNS.publish(publishRequest);
 
         // Print the MessageId of the message.
-        System.out.println("MessageId: " + publishResponse.getMessageId());
+        logger.info("MessageId: " + publishResponse.getMessageId());
 
     }
 }

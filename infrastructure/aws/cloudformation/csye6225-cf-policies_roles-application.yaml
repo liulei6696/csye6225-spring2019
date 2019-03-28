@@ -233,3 +233,8 @@ Outputs:
     Value: !GetAtt CodeDeployServiceRole.Arn
     Export:
       Name: !Sub ${AWS::StackName}-CodeDeployServiceRole-Arn
+  LambdaRole:
+    Description: Role for lambda email service function
+    Value: !GetAtt LambdaExecutionRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-LambdaRole-Arn

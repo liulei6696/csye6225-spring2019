@@ -7,7 +7,7 @@ Parameters:
     Type: String
   S3BucketName:
     Type: String
-  TopicName:
+  DomainName:
     Type: String
 
 Resources:
@@ -112,6 +112,8 @@ Resources:
           echo 'JAVA_OPTS="$JAVA_OPTS -Dspring.datasource.username=csye6225master"' >> /opt/tomcat/latest/bin/setenv.sh
           echo 'JAVA_OPTS="$JAVA_OPTS -Dspring.datasource.password=csye6225password"' >> /opt/tomcat/latest/bin/setenv.sh
           echo 'JAVA_OPTS="$JAVA_OPTS -Daws.s3.audio.bucket=${S3BucketName}"' >> /opt/tomcat/latest/bin/setenv.sh
+          echo 'JAVA_OPTS="$JAVA_OPTS -Ddomain.name=${DomainName}"' >> /opt/tomcat/latest/bin/setenv.sh
+          echo 'JAVA_OPTS="$JAVA_OPTS -Daws.sns.topic.arn=${PasswdResetTopic}"' >> /opt/tomcat/latest/bin/setenv.sh
           systemctl daemon-reload
       # UserData:
       #   Fn::Base64: !Sub |
@@ -128,23 +130,23 @@ Resources:
 
 
 # DynamoDB Table
-  MyDynamoDB:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-      -
-        AttributeName: "id"
-        AttributeType: "S"
-      KeySchema:
-      - 
-        AttributeName: "id"
-        KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
-      Tags:
-      - Key: Name
-        Value: !Sub ${AWS::StackName}-csye6225-dyndb
+  # MyDynamoDB:
+  #   Type: AWS::DynamoDB::Table
+  #   Properties:
+  #     AttributeDefinitions:
+  #     -
+  #       AttributeName: "id"
+  #       AttributeType: "S"
+  #     KeySchema:
+  #     - 
+  #       AttributeName: "id"
+  #       KeyType: "HASH"
+  #     ProvisionedThroughput:
+  #       ReadCapacityUnits: 5
+  #       WriteCapacityUnits: 5
+  #     Tags:
+  #     - Key: Name
+  #       Value: !Sub ${AWS::StackName}-csye6225-dyndb
   
   EmailDBTable:
     Type: AWS::DynamoDB::Table
@@ -159,6 +161,9 @@ Resources:
         ReadCapacityUnits: '5'
         WriteCapacityUnits: '5'
       TableName: email_token
+      TimeToLiveSpecification: 
+        AttributeName: ttl
+        Enabled: True
 
 # RDS Instance
   MyRDSInstance:
@@ -210,9 +215,36 @@ Resources:
       - Key: Name
         Value: !Sub ${AWS::StackName}-csye6225-rdssg
 
-#SNS Topic
-  MySNSTopic:
+  EmailLambdaFunc:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: email_service
+      Handler: "index.handler"
+      Role: 
+        Fn::ImportValue: 
+          !Sub "${roleStackName}-LambdaRole-Arn"
+      Code:
+        ZipFile: |
+          def handler(event, context):
+            print("Lambda functoion for email service created, nothing here")
+      Runtime: python3.6
+      Timeout: 5
+      MemorySize: 128
+
+  # SNS Topic
+  PasswdResetTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName:
-        Ref: TopicName
+      Subscription:
+        - Endpoint: !GetAtt EmailLambdaFunc.Arn
+          Protocol: lambda
+      TopicName: PasswdResetTopic
+  
+  # Permission to associate SNS topic with lambda function 
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !GetAtt EmailLambdaFunc.Arn
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref PasswdResetTopic
