@@ -1,11 +1,9 @@
 package edu.neu.coe.csye6225.service.impl;
 
 import edu.neu.coe.csye6225.entity.Attachment;
-import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.mapper.AttachmentMapper;
 import edu.neu.coe.csye6225.mapper.NoteMapper;
 import edu.neu.coe.csye6225.service.AttachmentService;
-import edu.neu.coe.csye6225.service.FileSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

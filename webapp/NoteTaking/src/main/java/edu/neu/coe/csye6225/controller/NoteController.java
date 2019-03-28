@@ -59,12 +59,12 @@ public class NoteController {
             List<Note> noteList = noteService.getAllNotes(user);
             JSONArray jsonArr = new JSONArray();
             for(Note n : noteList){
-                JSONObject jo = new JSONObject();
-                jo.put("noteId", n.getNoteId());
-                jo.put("title", n.getTitle());
-//                jo.put("content", n.getContent());
-//                jo.put("created_on", n.getCreateTime());
-                jo.put("last_updated_on", n.getLastModifiedTime());
+                JSONObject jo = noteService.getNoteDetailWithAttachment(n.getNoteId());
+//                jo.put("noteId", n.getNoteId());
+//                jo.put("title", n.getTitle());
+////                jo.put("content", n.getContent());
+////                jo.put("created_on", n.getCreateTime());
+//                jo.put("last_updated_on", n.getLastModifiedTime());
                 jsonArr.add(jo);
             }
 
@@ -218,6 +218,13 @@ public class NoteController {
         }
         if (accountService.logIn(user)) {
             if (noteService.deleteNote(user, noteId)) {
+                // delete all of the attachments in this note
+                List<Attachment> atts = attachmentService.getAllAttachments(noteId);
+                if (atts != null){
+                    for (Attachment att : atts){
+                        attachmentService.deleteAttachment(att.getAttachmentId());
+                    }
+                }
                 httpServletResponse.setHeader("status", String.valueOf(HttpStatus.NO_CONTENT));
                 resultJson.put("message", "Note deleted success");
                 return ResponseEntity.ok()
