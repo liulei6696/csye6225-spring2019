@@ -170,7 +170,11 @@ public class AccountController {
         if (email == null || email.equals(""))
             return QuickResponse.quickBadRequestConstruct(httpServletResponse, "email address missing");
 
-        amazonSNSClientService.publishMessagetoTopic(email);
+        if (accountValidation.isUserRegistered(email)) {
+            amazonSNSClientService.publishMessagetoTopic(email);
+        } else {
+            return QuickResponse.quickBadRequestConstruct(httpServletResponse,"User not registed");
+        }
 
         httpServletResponse.setHeader("status", String.valueOf(HttpStatus.CREATED));
         return ResponseEntity.ok()
