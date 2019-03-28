@@ -3,10 +3,7 @@ package edu.neu.coe.csye6225.controller;
 import edu.neu.coe.csye6225.entity.Attachment;
 import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
-import edu.neu.coe.csye6225.service.AccountService;
-import edu.neu.coe.csye6225.service.AttachmentService;
-import edu.neu.coe.csye6225.service.NoteService;
-import edu.neu.coe.csye6225.service.UserVerification;
+import edu.neu.coe.csye6225.service.*;
 import edu.neu.coe.csye6225.util.QuickResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -31,13 +28,15 @@ public class NoteController {
     private final AccountService accountService;
     private final NoteService noteService;
     private final AttachmentService attachmentService;
+    private final FileService fileService;
     private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "localhost", 8125);
 
     @Autowired
-    public NoteController(AccountService accountService, NoteService noteService, AttachmentService attachmentService) {
+    public NoteController(AccountService accountService, NoteService noteService, AttachmentService attachmentService, FileService fileService) {
         this.accountService = accountService;
         this.noteService = noteService;
         this.attachmentService = attachmentService;
+        this.fileService = fileService;
     }
 
     /**
@@ -59,12 +58,12 @@ public class NoteController {
             List<Note> noteList = noteService.getAllNotes(user);
             JSONArray jsonArr = new JSONArray();
             for(Note n : noteList){
-                JSONObject jo = new JSONObject();
-                jo.put("noteId", n.getNoteId());
-                jo.put("title", n.getTitle());
-//                jo.put("content", n.getContent());
-//                jo.put("created_on", n.getCreateTime());
-                jo.put("last_updated_on", n.getLastModifiedTime());
+                JSONObject jo = noteService.getNoteDetailWithAttachment(n.getNoteId());
+//                jo.put("noteId", n.getNoteId());
+//                jo.put("title", n.getTitle());
+////                jo.put("content", n.getContent());
+////                jo.put("created_on", n.getCreateTime());
+//                jo.put("last_updated_on", n.getLastModifiedTime());
                 jsonArr.add(jo);
             }
 
@@ -217,6 +216,14 @@ public class NoteController {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
         if (accountService.logIn(user)) {
+            // delete all of the attachments in this note
+//            List<Attachment> atts = attachmentService.getAllAttachments(noteId);
+//            if (atts != null){
+//                for (Attachment att : atts){
+//                    attachmentService.deleteAttachment(att.getAttachmentId());
+//                    fileService.deleteFile(att.getAttachmentId());
+//                }
+//            } // TODO: change this logic, could successfully delete attachments but delete note failed!
             if (noteService.deleteNote(user, noteId)) {
                 httpServletResponse.setHeader("status", String.valueOf(HttpStatus.NO_CONTENT));
                 resultJson.put("message", "Note deleted success");

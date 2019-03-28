@@ -10,6 +10,7 @@ Resources:
     Properties: 
         ManagedPolicyArns:
           - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+          - "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
         AssumeRolePolicyDocument: 
           Version: "2012-10-17"
           Statement: 
@@ -37,7 +38,29 @@ Resources:
               Action: 
                 - "sts:AssumeRole"
         RoleName: "CodeDeployServiceRole" 
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+      - arn:aws:iam::aws:policy/AmazonSESFullAccess
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole
+      RoleName: LambdaExecutionRole
         ## Role
+
+
 
   Policy1:
     Type: AWS::IAM::ManagedPolicy
@@ -163,6 +186,26 @@ Resources:
                       - "deploymentconfig:CodeDeployDefault.AllAtOnce"
         Users:
           - "circleci"
+  
+  
+  CloudWatchRolePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:PutLogEvents
+          - logs:DescribeLogStreams
+          Resource:
+          - arn:aws:logs:*:*:*
+      Roles:
+      - Ref: CodeDeployEC2ServiceRole
+  
+  
   EC2InstanceProfile: 
     Type: "AWS::IAM::InstanceProfile"
     Properties: 
@@ -191,3 +234,8 @@ Outputs:
     Value: !GetAtt CodeDeployServiceRole.Arn
     Export:
       Name: !Sub ${AWS::StackName}-CodeDeployServiceRole-Arn
+  LambdaRole:
+    Description: Role for lambda email service function
+    Value: !GetAtt LambdaExecutionRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-LambdaRole-Arn

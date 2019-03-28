@@ -10,7 +10,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import edu.neu.coe.csye6225.entity.Attachment;
 import edu.neu.coe.csye6225.service.AttachmentService;
-import edu.neu.coe.csye6225.service.FileSaveService;
+import edu.neu.coe.csye6225.service.FileService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +26,15 @@ import java.net.URL;
 
 @Component
 @Profile("prod")
-public class FileSaveServiceS3Impl implements FileSaveService {
+public class FileServiceS3Impl implements FileService {
 
     private String awsS3AudioBucket;
     private AmazonS3 amazonS3;
     private final AttachmentService attachmentService;
-    private static final Logger logger = LoggerFactory.getLogger(FileSaveServiceS3Impl.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileServiceS3Impl.class);
 
     @Autowired
-    public FileSaveServiceS3Impl (String awsS3AudioBucket, AttachmentService attachmentService) {
+    public FileServiceS3Impl(String awsS3AudioBucket, AttachmentService attachmentService) {
         this.amazonS3 = AmazonS3ClientBuilder.standard()
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
@@ -64,7 +64,7 @@ public class FileSaveServiceS3Impl implements FileSaveService {
 
         try {
             // creating the file in the server (temporarily)
-            File file = new File(fileName);
+            File file = new File("/tmp/"+fileName);
 
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(multipartFile.getBytes());

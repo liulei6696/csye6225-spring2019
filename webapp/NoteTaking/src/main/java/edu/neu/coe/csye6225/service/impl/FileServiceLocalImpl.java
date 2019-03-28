@@ -2,7 +2,7 @@ package edu.neu.coe.csye6225.service.impl;
 
 import edu.neu.coe.csye6225.entity.Attachment;
 import edu.neu.coe.csye6225.service.AttachmentService;
-import edu.neu.coe.csye6225.service.FileSaveService;
+import edu.neu.coe.csye6225.service.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +15,15 @@ import java.io.IOException;
 
 @Component
 @Profile("dev")
-public class FileSaveServiceLocalImpl implements FileSaveService {
+public class FileServiceLocalImpl implements FileService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileSaveServiceLocalImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileServiceLocalImpl.class);
 
     private String tempFolder;
     private final AttachmentService attachmentService;
 
     @Autowired
-    public FileSaveServiceLocalImpl (AttachmentService attachmentService) {
+    public FileServiceLocalImpl(AttachmentService attachmentService) {
         this.tempFolder = createTempFolder();
         this.attachmentService = attachmentService;
     }

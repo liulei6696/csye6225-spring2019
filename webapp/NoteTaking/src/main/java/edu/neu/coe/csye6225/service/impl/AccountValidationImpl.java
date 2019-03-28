@@ -62,6 +62,12 @@ public class AccountValidationImpl implements AccountValidation {
     }
 
     @Override
+    public boolean isUserRegistered(String email) {
+        User thisuser = userMapper.getUserByUsername(email);
+        return (thisuser != null);
+    }
+
+    @Override
     public boolean isPasswordCorrect(User user) {
         User thisuser = userMapper.getUserByUsername(user.getUsername());
         if (BCrypt.checkpw(user.getPassword(), thisuser.getPassword()))

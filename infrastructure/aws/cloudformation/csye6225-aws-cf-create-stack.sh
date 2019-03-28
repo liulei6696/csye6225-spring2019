@@ -5,7 +5,7 @@ set -e
 work_dir=$(cd `dirname $0`; pwd)
 cd ${work_dir}
 
-read -p "Input name of the new stack: " stackName
+read -p "Input name of this new stack: " stackName
 aws cloudformation create-stack --stack-name $stackName --template-body file://csye6225-cf-networking.yaml
 echo "creating"
 aws cloudformation wait stack-create-complete --stack-name $stackName
