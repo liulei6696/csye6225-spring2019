@@ -10,6 +10,7 @@ Resources:
     Properties: 
         ManagedPolicyArns:
           - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+          - “arn:aws:iam::aws:policy/AmazonSNSFullAccess”
         AssumeRolePolicyDocument: 
           Version: "2012-10-17"
           Statement: 
