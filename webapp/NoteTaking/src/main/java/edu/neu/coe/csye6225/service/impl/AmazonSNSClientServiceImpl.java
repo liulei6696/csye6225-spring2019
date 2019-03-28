@@ -10,6 +10,7 @@ import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
 import edu.neu.coe.csye6225.service.AmazonSNSClientService;
+import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +48,14 @@ public class AmazonSNSClientServiceImpl implements AmazonSNSClientService {
 
     public void publishMessagetoTopic(String email) {
         // Publish a message to an Amazon SNS topic.
-        final String msg = "{\n" +
-                "\t\"domain\": " + domainName + ",\n" +
-                "\t\"email\": " + email + "\n" +
-                "}";
-        final PublishRequest publishRequest = new PublishRequest(topicArn, msg);
+        JSONObject msg = new JSONObject();
+        msg.put("domain", domainName);
+        msg.put("email", email);
+//        final String msg = "{\n" +
+//                "\t\"domain\": " + domainName + ",\n" +
+//                "\t\"email\": " + email + "\n" +
+//                "}";
+        final PublishRequest publishRequest = new PublishRequest(topicArn, msg.toString());
         final PublishResult publishResponse = this.amazonSNS.publish(publishRequest);
 
         // Print the MessageId of the message.
