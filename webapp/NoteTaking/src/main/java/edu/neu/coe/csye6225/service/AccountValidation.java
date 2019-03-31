@@ -16,6 +16,8 @@ public interface AccountValidation {
     // Check user exists or not
     boolean isUserRegistered (User user);
 
+    boolean isUserRegistered(String email);
+
     // Check user password correct or not
     boolean isPasswordCorrect(User user);
 
