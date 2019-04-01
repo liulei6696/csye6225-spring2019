@@ -22,7 +22,7 @@ public class QuickResponse {
         JSONObject resultJson = new JSONObject();
         resultJson.put("message", "Login failure! The username or password is wrong");
         httpServletResponse.setHeader("status", String.valueOf(SC_UNAUTHORIZED));
-        httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
+//        httpServletResponse.sendError(SC_UNAUTHORIZED,"Login failure! The username or password is wrong");
         return ResponseEntity.badRequest()
                 .body(resultJson.toString());
     }
@@ -35,7 +35,7 @@ public class QuickResponse {
         JSONObject resultJson = new JSONObject();
         resultJson.put("message", "No access to resource");
         httpServletResponse.setHeader("status", String.valueOf(SC_UNAUTHORIZED));
-        httpServletResponse.sendError(SC_UNAUTHORIZED,"No access to resource");
+//        httpServletResponse.sendError(SC_UNAUTHORIZED,"No access to resource");
         return ResponseEntity.badRequest()
                 .body(resultJson.toString());
     }
@@ -60,7 +60,7 @@ public class QuickResponse {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", message);
         httpServletResponse.setHeader("status", String.valueOf(SC_BAD_REQUEST));
-        httpServletResponse.sendError(SC_UNAUTHORIZED,message);
+//        httpServletResponse.sendError(SC_UNAUTHORIZED,message);
         return ResponseEntity.badRequest()
                 .body(jsonObject.toString());
     }
