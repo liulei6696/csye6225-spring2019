@@ -1,0 +1,476 @@
+{
+   "Parameters": {
+      "refStackName": {
+         "Type": "String"
+      },
+      "amiId": {
+         "Type": "String"
+      },
+      "roleStackName": {
+         "Type": "String"
+      },
+      "S3BucketName": {
+         "Type": "String"
+      },
+      "DomainName": {
+         "Type": "String"
+      },
+      "WebServerSecurityGroupID" : {
+         "Type" : "String"
+     },
+     "LoadBalancerName" : {
+      "Type" :"String"
+     },
+    "LoadBalancerSecurityGroupID" : {
+      "Type" : "String"
+     },
+    "DBServerSecurityGroupID" : {
+      "Type" : "String"
+     },
+     "TagKey": {
+      "Type": "String"
+    },
+    "TagValue": {
+      "Type": "String"
+    },
+    "ParamVpcId" : {
+      "Type": "String"
+    },
+    "HostedZoneId" : {
+      "Type" : "String"
+    }
+   },
+   "Resources": {
+      "CodeDeployEC2ServiceRoleInstanceProfile": {
+			"Type": "AWS::IAM::InstanceProfile",
+			"Properties": {
+				"Path": "/",
+				"Roles": [
+					"CodeDeployEC2ServiceRole"
+				]
+			}
+    },
+    "AsgLaunchConfig":{
+      "Type" : "AWS::AutoScaling::LaunchConfiguration",
+      "Properties" : {
+        "AssociatePublicIpAddress": "true",
+        "InstanceType" : "t2.micro",
+        "ImageId" : {"Ref" : "amiId"},
+	      "KeyName" : "csye6225.pub",
+         "SecurityGroups" : [ {"Ref" : "WebServerSecurityGroupID"}],
+         "BlockDeviceMappings": [
+            {
+               "DeviceName": "/dev/sdm",
+               "Ebs": {
+                  "VolumeType": "gp2",
+                  "DeleteOnTermination": true,
+                  "VolumeSize": 20
+               }
+            }
+         ],
+        
+        "UserData" : {
+          "Fn::Base64": {
+          "Fn::Join": [
+            "",
+              [
+                "#!/bin/bash -xe \n",
+                "sudo su \n",
+                "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",
+                "chmod +x /opt/tomcat/latest/bin/setenv.sh\n",
+                {
+                  "Fn::Sub": "echo \"JAVA_OPTS=\\\"\\$JAVA_OPTS -Dspring.profiles.active=prod\\\"\" >> /opt/tomcat/latest/bin/setenv.sh  \n"
+                },
+                {
+                  "Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://${MyRDSInstance.Endpoint.Address}:3306/csye6225\"' >> /opt/tomcat/latest/bin/setenv.sh \n"
+                },
+                {
+                  "Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"' >> /opt/tomcat/latest/bin/setenv.sh \n"
+                },
+                {
+                  "Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"' >> /opt/tomcat/latest/bin/setenv.sh \n"
+                },
+                {
+                  "Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.s3.audio.bucket=${S3BucketName}\"' >> /opt/tomcat/latest/bin/setenv.sh \n"
+                },
+                {
+                  "Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Ddomain.name=${DomainName}\"' >> /opt/tomcat/latest/bin/setenv.sh \n"
+                },
+                {
+                  "Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.sns.topic.arn=${PasswdResetTopic}\"' >> /opt/tomcat/latest/bin/setenv.sh \n"
+                },
+                "systemctl daemon-reload\n"          
+              ]
+            ]
+          }
+        },
+        "IamInstanceProfile": {
+          "Ref": "CodeDeployEC2ServiceRoleInstanceProfile"
+        }
+      }
+    },
+
+    "WebServerGroup" : {
+      "Type" : "AWS::AutoScaling::AutoScalingGroup",
+      "Properties" : {
+         "LaunchConfigurationName" : { "Ref" : "AsgLaunchConfig" },
+         "MinSize" : "3",
+         "DesiredCapacity" : "3",
+         "MaxSize" : "10",
+         "TargetGroupARNs": [{
+            "Ref": "ALBTargetGroup"
+         }
+         ],
+         "Tags": [{
+            "Key": {
+               "Ref": "TagKey"
+            },
+            "Value": {
+               "Ref": "TagValue"
+            },
+            "PropagateAtLaunch" : "true"
+         }],
+         "VPCZoneIdentifier" :[
+            {"Fn::ImportValue":{"Fn::Sub":"${refStackName}-SUBNETAID"
+            }}
+         ]
+      },
+      "DependsOn": "ALBListener"
+   },
+
+   "WebServerScaleUpPolicy": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "AdjustmentType": "ChangeInCapacity",
+        "AutoScalingGroupName": {
+          "Ref": "WebServerGroup"
+        },
+        "Cooldown": "60",
+        "ScalingAdjustment": "1"
+      }
+    },
+    "WebServerScaleDownPolicy": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "AdjustmentType": "ChangeInCapacity",
+        "AutoScalingGroupName": {
+          "Ref": "WebServerGroup"
+        },
+        "Cooldown": "60",
+        "ScalingAdjustment": "-1"
+      }
+    },
+    "CPUAlarmHigh": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Scale-up if CPU > 10% for 10 minutes",
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2",
+        "Statistic": "Average",
+        "Period": "300",
+        "EvaluationPeriods": "2",
+        "Threshold": "10",
+        "AlarmActions": [
+          {
+            "Ref": "WebServerScaleUpPolicy"
+          }
+        ],
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": {
+              "Ref": "WebServerGroup"
+            }
+          }
+        ],
+        "ComparisonOperator": "GreaterThanThreshold"
+      }
+    },
+    "CPUAlarmLow": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Scale-down if CPU < 5% for 10 minutes",
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2",
+        "Statistic": "Average",
+        "Period": "300",
+        "EvaluationPeriods": "2",
+        "Threshold": "5",
+        "AlarmActions": [
+          {
+            "Ref": "WebServerScaleDownPolicy"
+          }
+        ],
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": {
+              "Ref": "WebServerGroup"
+            }
+          }
+        ],
+        "ComparisonOperator": "LessThanThreshold"
+      }
+    },
+
+    "LoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+         "Name": {"Ref":"LoadBalancerName"},
+         "Scheme": "internet-facing",
+         "Subnets": [
+            {
+               "Fn::ImportValue":{"Fn::Sub":"${refStackName}-SUBNETAID"} 
+            },
+            {
+               "Fn::ImportValue":{"Fn::Sub":"${refStackName}-SUBNETBID"} 
+            },
+            {
+               "Fn::ImportValue":{"Fn::Sub":"${refStackName}-SUBNETCID"} 
+            }],
+         "SecurityGroups":[{"Ref":"LoadBalancerSecurityGroupID"}],
+         "Type": "application",
+         "IpAddressType": "ipv4"
+      }
+   },
+
+   "CertificateArn1":{
+      "Type" : "AWS::CertificateManager::Certificate",
+      "Properties" : {
+      "DomainName" : {"Ref" : "DomainName"},
+      "DomainValidationOptions" : [ 
+        {
+          "DomainName" : {"Ref" : "DomainName"},
+        "ValidationDomain" : {"Ref" : "DomainName"}
+        }
+       ]        
+    }
+   },
+
+   "ALBListener" : {
+      "Type" : "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties" : {
+         "DefaultActions" : [{
+            "Type" : "forward",
+            "TargetGroupArn" : { "Ref" : "ALBTargetGroup" }
+         }],
+         "LoadBalancerArn" : { "Ref" : "LoadBalancer" },
+         "Port" : "443",
+         "Protocol" : "HTTPS",
+         "Certificates": [
+            {
+               "CertificateArn": {
+                  "Ref": "CertificateArn1"
+               }
+            }
+         ]
+      }
+   },
+
+   "ALBListener2" : {
+      "Type" : "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties" : {
+         "DefaultActions" : [{
+            "Type" : "forward",
+            "TargetGroupArn" : { "Ref" : "ALBTargetGroup" }
+         }],
+         "LoadBalancerArn" : { "Ref" : "LoadBalancer" },
+         "Port" : "80",
+         "Protocol" : "HTTP"
+      }
+   },
+
+   "ALBTargetGroup" : {
+      "Type" : "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties" : {
+         "HealthCheckIntervalSeconds" : 30,
+         "UnhealthyThresholdCount" : 10,
+         "HealthCheckPath" : "/",
+         "TargetGroupAttributes": [{
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "20"
+         }],
+         "Name" : "MyTargetGroup",
+         "HealthCheckPort" : 8080,
+         "TargetType": "instance",
+         "Port" : 8080,
+         "Protocol" : "HTTP",
+         "VpcId" : { "Ref": "ParamVpcId" }
+      }
+   },
+
+   
+   "DomainRecordSet": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+         "AliasTarget" : {
+            "HostedZoneId" : { "Fn::GetAtt" : ["LoadBalancer", "CanonicalHostedZoneID"] },
+            "DNSName" : { "Fn::GetAtt" : ["LoadBalancer","DNSName"] }
+         },
+         "HostedZoneId": {
+            "Ref": "HostedZoneId"
+         },
+         "Name": {
+            "Ref": "DomainName"
+         },
+         "Type": "A"
+      }
+   },
+
+   "EmailDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+         "AttributeDefinitions": [
+            {
+               "AttributeName": "email_address",
+               "AttributeType": "S"
+            }
+         ],
+         "KeySchema": [
+            {
+               "AttributeName": "email_address",
+               "KeyType": "HASH"
+            }
+         ],
+         "ProvisionedThroughput": {
+            "ReadCapacityUnits": "5",
+            "WriteCapacityUnits": "5"
+         },
+         "TableName": "email_token",
+         "TimeToLiveSpecification": {
+            "AttributeName": "ttl",
+            "Enabled": true
+         }
+      }
+   },
+
+   "MyRDSInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+         "DBName": "csye6225",
+         "Engine": "MySQL",
+         "DBInstanceClass": "db.t2.medium",
+         "MultiAZ": false,
+         "DBInstanceIdentifier": "csye6225-spring2019",
+         "MasterUsername": "csye6225master",
+         "MasterUserPassword": "csye6225password",
+         "DBSubnetGroupName": {"Ref":"myDBSubnetGroup"},
+         "PubliclyAccessible": true,
+         "AllocatedStorage": 5,
+         "VPCSecurityGroups": [
+            {"Ref" : "DBServerSecurityGroupID"}
+         ],
+         "Tags": [
+            {
+               "Key": "Name",
+               "Value": {"Fn::Sub":"${AWS::StackName}-csye6225-dyndb"}
+            }
+         ]
+      }
+   },
+
+   "myDBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+         "DBSubnetGroupDescription": "subnet group for RDS instance",
+         "SubnetIds": [
+            {
+               "Fn::ImportValue":{"Fn::Sub":"${refStackName}-SUBNETAID"} 
+            },
+            {
+               "Fn::ImportValue":{"Fn::Sub":"${refStackName}-SUBNETBID"} 
+            },
+            {
+               "Fn::ImportValue":{"Fn::Sub":"${refStackName}-SUBNETCID"} 
+            }
+         ],
+         "Tags": [
+            {
+               "Key": "Name",
+               "Value": {"Fn::Sub":"${AWS::StackName}-csye6225-rdssubg"}
+            }
+         ]
+      }
+   },
+
+
+
+    "PasswdResetTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+         "Subscription": [
+            {
+               "Endpoint": {"Fn::GetAtt":"EmailLambdaFunc.Arn"},
+               "Protocol": "lambda"
+            }
+         ],
+         "TopicName": "PasswdResetTopic"
+      }
+   },
+
+   "EmailLambdaFunc": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+         "FunctionName": "email_service",
+         "Handler": "index.handler",
+         "Role": {
+            "Fn::ImportValue": {"Fn::Sub":"${roleStackName}-LambdaRole-Arn"}
+         },
+         "Code": {
+            "ZipFile": "def handler(event, context):\n  print(\"Lambda functoion for email service created, nothing here\")\n"
+         },
+         "Runtime": "python3.6",
+         "Timeout": 5,
+         "MemorySize": 128
+      }
+   },
+
+   "LambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+         "Action": "lambda:InvokeFunction",
+         "FunctionName": {"Fn::GetAtt":"EmailLambdaFunc.Arn"},
+         "Principal": "sns.amazonaws.com",
+         "SourceArn": {"Ref":"PasswdResetTopic"}
+      }
+   },
+
+   "WebappApplication": {
+      "Type": "AWS::CodeDeploy::Application",
+      "Properties": {
+         "ApplicationName": "csye6225-webapp",
+         "ComputePlatform": "Server"
+      }
+   },
+
+   "WebappDeploymentGroup": {
+      "Type": "AWS::CodeDeploy::DeploymentGroup",
+      "Properties": {
+         "ApplicationName": {"Ref":"WebappApplication"},
+         "AutoRollbackConfiguration": {
+            "Enabled": true,
+            "Events": [
+               "DEPLOYMENT_FAILURE"
+            ]
+         },
+         "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
+         "DeploymentGroupName": "csye6225-webapp-deployment",
+         "DeploymentStyle": {
+            "DeploymentType": "IN_PLACE",
+            "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"
+         },
+         "Ec2TagFilters": [
+            {
+               "Key": "Name",
+               "Value": {"Fn::Sub":"${AWS::StackName}-csye6225-ec2inst"},
+               "Type": "KEY_AND_VALUE"
+            }
+         ],
+         "ServiceRoleArn": {
+            "Fn::ImportValue": {"Fn::Sub":"${roleStackName}-CodeDeployServiceRole-Arn"}
+         }
+      }
+   }
+   }
+   
+}
