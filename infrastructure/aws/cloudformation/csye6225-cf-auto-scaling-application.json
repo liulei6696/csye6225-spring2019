@@ -234,6 +234,19 @@
       }
    },
 
+   "CertificateArn1":{
+      "Type" : "AWS::CertificateManager::Certificate",
+      "Properties" : {
+      "DomainName" : {"Ref" : "DomainName"},
+      "DomainValidationOptions" : [ 
+        {
+          "DomainName" : {"Ref" : "DomainName"},
+        "ValidationDomain" : {"Ref" : "DomainName"}
+        }
+       ]        
+    }
+   },
+
    "ALBListener" : {
       "Type" : "AWS::ElasticLoadBalancingV2::Listener",
       "Properties" : {
@@ -265,19 +278,6 @@
          "Port" : "80",
          "Protocol" : "HTTP"
       }
-   },
-
-   "CertificateArn1":{
-      "Type" : "AWS::CertificateManager::Certificate",
-      "Properties" : {
-      "DomainName" : {"Ref" : "DomainName"},
-      "DomainValidationOptions" : [ 
-        {
-          "DomainName" : {"Ref" : "DomainName"},
-        "ValidationDomain" : {"Ref" : "DomainName"}
-        }
-       ]        
-    }
    },
 
    "ALBTargetGroup" : {
