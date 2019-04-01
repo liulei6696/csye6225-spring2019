@@ -162,9 +162,9 @@ Resources:
           Fn::GetAtt:
           - WebServerSecurityGroup
           - GroupId
-        Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}-csye6225-rdssg
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-csye6225-rdssg
 
 Outputs:
     StackVPC:

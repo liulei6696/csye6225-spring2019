@@ -27,16 +27,16 @@
     "DBServerSecurityGroupID" : {
       "Type" : "String"
      },
-  "CertificateArn1" : {
-   "Type" : "String"
+     "TagKey": {
+      "Type": "String"
+    },
+    "TagValue": {
+      "Type": "String"
     },
     "ParamVpcId" : {
       "Type": "String"
     },
     "HostedZoneId" : {
-      "Type" : "String"
-    },
-    "Name" : {
       "Type" : "String"
     }
    },
@@ -50,7 +50,7 @@
 				]
 			}
     },
-    "asg_launch_config":{
+    "AsgLaunchConfig":{
       "Type" : "AWS::AutoScaling::LaunchConfiguration",
       "Properties" : {
         "AssociatePublicIpAddress": "true",
@@ -113,7 +113,7 @@
     "WebServerGroup" : {
       "Type" : "AWS::AutoScaling::AutoScalingGroup",
       "Properties" : {
-         "LaunchConfigurationName" : { "Ref" : "asg_launch_config" },
+         "LaunchConfigurationName" : { "Ref" : "AsgLaunchConfig" },
          "MinSize" : "3",
          "DesiredCapacity" : "3",
          "MaxSize" : "10",
@@ -267,6 +267,19 @@
       }
    },
 
+   "CertificateArn1":{
+      "Type" : "AWS::CertificateManager::Certificate",
+      "Properties" : {
+      "DomainName" : {"Ref" : "DomainName"},
+      "DomainValidationOptions" : [ 
+        {
+          "DomainName" : {"Ref" : "DomainName"},
+        "ValidationDomain" : {"Ref" : "DomainName"}
+        }
+       ]        
+    }
+   },
+
    "ALBTargetGroup" : {
       "Type" : "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties" : {
@@ -283,21 +296,22 @@
          "Port" : 8080,
          "Protocol" : "HTTP",
          "VpcId" : { "Ref": "ParamVpcId" }
-      },
+      }
+   },
 
    
-   "ResourceRecords": {
+   "DomainRecordSet": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
+         "AliasTarget" : {
+            "HostedZoneId" : { "Fn::GetAtt" : ["LoadBalancer", "CanonicalHostedZoneID"] },
+            "DNSName" : { "Fn::GetAtt" : ["LoadBalancer","DNSName"] }
+         },
          "HostedZoneId": {
             "Ref": "HostedZoneId"
          },
          "Name": {
-            "Ref": "Name"
-         },
-         "AliasTarget" : {
-            "HostedZoneId" : { "Fn::GetAtt" : ["LoadBalancer", "CanonicalHostedZoneID"] },
-            "DNSName" : { "Fn::GetAtt" : ["LoadBalancer","DNSName"] }
+            "Ref": "DomainName"
          },
          "Type": "A"
       }
@@ -379,14 +393,7 @@
       }
    },
 
-   "S3Bucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "S3BucketName"
-        }
-      }
-    },
+
 
     "PasswdResetTopic": {
       "Type": "AWS::SNS::Topic",
@@ -424,7 +431,7 @@
          "Action": "lambda:InvokeFunction",
          "FunctionName": {"Fn::GetAtt":"EmailLambdaFunc.Arn"},
          "Principal": "sns.amazonaws.com",
-         "SourceArn": {"Fn::Ref":"PasswdResetTopic"}
+         "SourceArn": {"Ref":"PasswdResetTopic"}
       }
    },
 
@@ -439,7 +446,7 @@
    "WebappDeploymentGroup": {
       "Type": "AWS::CodeDeploy::DeploymentGroup",
       "Properties": {
-         "ApplicationName": {"Fn::Ref":"WebappApplication"},
+         "ApplicationName": {"Ref":"WebappApplication"},
          "AutoRollbackConfiguration": {
             "Enabled": true,
             "Events": [
@@ -465,5 +472,5 @@
       }
    }
    }
-   }
+   
 }
