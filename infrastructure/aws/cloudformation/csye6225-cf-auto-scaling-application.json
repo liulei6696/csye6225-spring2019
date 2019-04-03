@@ -658,9 +658,9 @@
         },
         "Ec2TagFilters": [
           {
-            "Key": "csye6225",
+            "Key": "Name",
             "Value": {
-              "Fn::Sub": "${AWS::StackName}-csye6225-ec2inst"
+              "Fn::Sub": "${AWS::StackName}-Ec2Instance"
             },
             "Type": "KEY_AND_VALUE"
           }
