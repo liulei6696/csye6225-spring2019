@@ -238,7 +238,7 @@
                 "echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",
                 "chmod +x /opt/tomcat/latest/bin/setenv.sh\n",
                 {
-                  "Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=prod\"', >> /opt/tomcat/latest/bin/setenv.sh  \n"
+                  "Fn::Sub": "echo \"JAVA_OPTS=\\\"\\$JAVA_OPTS -Dspring.profiles.active=prod\\\"\" >> /opt/tomcat/latest/bin/setenv.sh  \n"
                 },
                 {
                   "Fn::Sub": "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://${MyRDSInstance.Endpoint.Address}:3306/csye6225\"' >> /opt/tomcat/latest/bin/setenv.sh \n"
@@ -447,7 +447,7 @@
         "LoadBalancerArn": {
           "Ref": "LoadBalancer"
         },
-        "Port": "80",
+        "Port": "8080",
         "Protocol": "HTTP"
       }
     },
