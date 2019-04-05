@@ -243,7 +243,7 @@ public class NoteController {
     /**
      * get note by id in the path (for sql injection testing)
      */
-    @GetMapping("/note")
+    @GetMapping("/notes")
     public ResponseEntity<String> getNoteByIdSQL( HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         statsd.incrementCounter("endpoint.noteId.http.get");
         JSONObject resultJson = new JSONObject();
