@@ -18,7 +18,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">5</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -41,8 +41,8 @@
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${domainName}</stringProp>
-          <stringProp name="HTTPSampler.port">8080</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/user/register</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -62,10 +62,10 @@
               <stringProp name="-1244085905">domainName</stringProp>
             </collectionProp>
             <collectionProp name="UserParameters.thread_values">
-              <collectionProp name="2071703438">
+              <collectionProp name="284515541">
                 <stringProp name="-1534413909">${__UUID()}@jmeter.test</stringProp>
-                <stringProp name="-635716041">${__UUID()}!</stringProp>
-                <stringProp name="-1230260584">3.210.185.220</stringProp>
+                <stringProp name="1023266881">${__RandomString(4, ABCD)}!${__RandomString(4, abcd)}</stringProp>
+                <stringProp name="491391413">csye6225-spring2019-liulei1.me</stringProp>
               </collectionProp>
             </collectionProp>
             <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -76,6 +76,10 @@
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Content-Type</stringProp>
                 <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-csrf-token</stringProp>
+                <stringProp name="Header.value">aaaassssddddffffgggghhhhjjjjkkkkllll</stringProp>
               </elementProp>
             </collectionProp>
           </HeaderManager>
@@ -134,8 +138,8 @@
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${domainName}</stringProp>
-          <stringProp name="HTTPSampler.port">8080</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/note</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -151,7 +155,7 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">http://${domainName}:8080/note</stringProp>
+                <stringProp name="Authorization.url">https://${domainName}/note</stringProp>
                 <stringProp name="Authorization.username">${username}</stringProp>
                 <stringProp name="Authorization.password">${password}</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
@@ -165,6 +169,10 @@
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Content-Type</stringProp>
                 <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-csrf-token</stringProp>
+                <stringProp name="Header.value">aaaassssddddffffgggghhhhjjjjkkkkllll</stringProp>
               </elementProp>
             </collectionProp>
           </HeaderManager>
@@ -216,8 +224,8 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Attachment Upload Post Request" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="/Users/lei/Desktop/Trigger.txt" elementType="HTTPFileArg">
-                <stringProp name="File.path">/Users/lei/Desktop/Trigger.txt</stringProp>
+              <elementProp name="/Users/lei/Desktop/list.txt" elementType="HTTPFileArg">
+                <stringProp name="File.path">/Users/lei/Desktop/list.txt</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
                 <stringProp name="File.mimetype"></stringProp>
               </elementProp>
@@ -227,8 +235,8 @@
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${domainName}</stringProp>
-          <stringProp name="HTTPSampler.port">8080</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/note/${noteId}/attachments</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -244,7 +252,7 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">http://${domainName}:8080/note/${noteId}/attachments</stringProp>
+                <stringProp name="Authorization.url">https://${domainName}/note/${noteId}/attachments</stringProp>
                 <stringProp name="Authorization.username">${username}</stringProp>
                 <stringProp name="Authorization.password">${password}</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
@@ -254,7 +262,12 @@
           </AuthManager>
           <hashTree/>
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-            <collectionProp name="HeaderManager.headers"/>
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-csrf-token</stringProp>
+                <stringProp name="Header.value">aaaassssddddffffgggghhhhjjjjkkkkllll</stringProp>
+              </elementProp>
+            </collectionProp>
           </HeaderManager>
           <hashTree/>
           <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
