@@ -10,3 +10,4 @@ do
 done
 sudo touch bi
 sudo rm -rf /opt/tomcat/latest/webapps/ROOT
+sudo rm /home/centos/userdatacomplete.sh
