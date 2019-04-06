@@ -32,7 +32,7 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public Note createNote(User user) {
         Note note = new Note(user.getUsername(), "Title of the note", "Content of the note");
-        if(noteMapper.insertNote(note) > 0) {
+        if (noteMapper.insertNote(note) > 0) {
             logger.info("Note created for user: " + user.getUsername());
             return note;
         } else return null;
@@ -44,7 +44,7 @@ public class NoteServiceImpl implements NoteService {
         if (note == null) return false;
         String noteUserId = note.getUserId();
         if (user.getUsername().equals(noteUserId)) {
-            if(noteMapper.deleteNote(note)) {
+            if (noteMapper.deleteNote(note)) {
                 logger.info("Note deleted!");
                 return true;
             } else {
@@ -59,7 +59,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Note updateNote(User user,Note note) {
+    public Note updateNote(User user, Note note) {
         if (note == null) {
             logger.info("Please specify the note you want to update!");
             return null;
@@ -67,7 +67,7 @@ public class NoteServiceImpl implements NoteService {
         Note realNote = noteMapper.getNoteById(note.getNoteId());
         if (user.getUsername().equals(realNote.getUserId())) {
             note.setLastModifiedTime();
-            if(noteMapper.updateNote(note) > 0) {
+            if (noteMapper.updateNote(note) > 0) {
                 logger.info("Note updated!");
                 return noteMapper.getNoteById(note.getNoteId());
             } else {
@@ -81,7 +81,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Note getNoteById(User user,String noteId) {
+    public Note getNoteById(User user, String noteId) {
         Note note = noteMapper.getNoteById(noteId);
         if (note == null) return note;
         String noteUserId = note.getUserId();
@@ -101,13 +101,13 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public List<Note> getAllNotes(User user) {
         List<Note> noteList = new ArrayList<>();
-            noteList = noteMapper.getAllNotes(user.getUsername());
+        noteList = noteMapper.getAllNotes(user.getUsername());
         return noteList;
     }
 
     @Override
     public Boolean noteBelongToUser(String noteId, String userId) {
-        if(noteMapper.getNoteById(noteId) == null)
+        if (noteMapper.getNoteById(noteId) == null)
             return false;
         return noteMapper.getNoteById(noteId).getUserId().equals(userId);
     }
@@ -142,5 +142,13 @@ public class NoteServiceImpl implements NoteService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    @Override
+    public List<Note> getNoteByIdSQL(String noteId) {
+        List<Note> noteList = noteMapper.getNoteByIdSQL(noteId);
+        logger.info("Get note successfully!");
+        return noteList;
     }
 }

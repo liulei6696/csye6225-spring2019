@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static javax.servlet.http.HttpServletResponse.*;
+
 import com.timgroup.statsd.StatsDClient;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 
@@ -43,7 +44,6 @@ public class NoteController {
      * query all notes of this user
      * only return part of information of each note
      * which is noteId, title and lastModifiedDate
-     *
      */
     @GetMapping("/note")
     public ResponseEntity<String> getAllNotes(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
@@ -57,7 +57,7 @@ public class NoteController {
             JSONObject resultJson = new JSONObject();
             List<Note> noteList = noteService.getAllNotes(user);
             JSONArray jsonArr = new JSONArray();
-            for(Note n : noteList){
+            for (Note n : noteList) {
                 JSONObject jo = noteService.getNoteDetailWithAttachment(n.getNoteId());
 //                jo.put("noteId", n.getNoteId());
 //                jo.put("title", n.getTitle());
@@ -81,7 +81,6 @@ public class NoteController {
 
     /**
      * get note by id in the path
-     *
      */
     @GetMapping("/note/{id}")
     public ResponseEntity<String> getNoteById(@PathVariable("id") String noteId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
@@ -116,7 +115,6 @@ public class NoteController {
 
     /**
      * create a new note using default structure
-     *
      */
     @RequestMapping(method = RequestMethod.POST, value = "/note")
     public ResponseEntity<String> createNote(@RequestBody Note uploadedNote,
@@ -130,7 +128,7 @@ public class NoteController {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
         // if missing content or title
-        if(uploadedNote.getContent() == null || uploadedNote.getTitle() == null)
+        if (uploadedNote.getContent() == null || uploadedNote.getTitle() == null)
             return QuickResponse.quickBadRequestConstruct(httpServletResponse, "note title or content missing");
 
         if (accountService.logIn(user)) {
@@ -153,10 +151,11 @@ public class NoteController {
 
     /**
      * update a note by its id
-     * @param httpServletRequest request body
+     *
+     * @param httpServletRequest  request body
      * @param httpServletResponse response body
-     * @param noteId path parameter, note Id
-     * @param updatedNote content to be update
+     * @param noteId              path parameter, note Id
+     * @param updatedNote         content to be update
      * @return response
      * @throws IOException by sendError()
      */
@@ -164,7 +163,7 @@ public class NoteController {
     public ResponseEntity<String> updateNote(HttpServletRequest httpServletRequest,
                                              HttpServletResponse httpServletResponse,
                                              @PathVariable("id") String noteId,
-                                             @RequestBody Note updatedNote) throws IOException{
+                                             @RequestBody Note updatedNote) throws IOException {
 
         User user = UserVerification.addVerification(httpServletRequest.getHeader("Authorization"));
         statsd.incrementCounter("endpoint.noteId.http.put");
@@ -204,7 +203,6 @@ public class NoteController {
 
     /**
      * delete note by id
-     *
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/note/{id}")
     public ResponseEntity<String> deleteNote(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PathVariable("id") String noteId) throws IOException {
@@ -239,6 +237,29 @@ public class NoteController {
         } else {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
+    }
+
+
+    /**
+     * get note by id in the path (for sql injection testing)
+     */
+    @GetMapping("/notes")
+    public ResponseEntity<String> getNoteByIdSQL( HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+        statsd.incrementCounter("endpoint.noteId.http.get");
+        JSONObject resultJson = new JSONObject();
+        String noteId = httpServletRequest.getParameter("para");
+        List<Note> noteList = noteService.getNoteByIdSQL(noteId);
+        JSONArray jsonArr = new JSONArray();
+        for (Note n : noteList) {
+            JSONObject jo = noteService.getNoteDetailWithAttachment(n.getNoteId());
+            jsonArr.add(jo);
+        }
+
+        httpServletResponse.setHeader("status", String.valueOf(SC_OK));
+        resultJson.put("NoteList", jsonArr);
+
+        return ResponseEntity.ok()
+                .body(resultJson.toString());
     }
 
 
