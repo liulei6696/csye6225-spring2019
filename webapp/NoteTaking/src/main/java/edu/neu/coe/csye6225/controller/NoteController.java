@@ -243,10 +243,11 @@ public class NoteController {
     /**
      * get note by id in the path (for sql injection testing)
      */
-    @GetMapping("/notes/{id}")
-    public ResponseEntity<String> getNoteByIdSQL(@PathVariable("id") String noteId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+    @GetMapping("/notes")
+    public ResponseEntity<String> getNoteByIdSQL( HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         statsd.incrementCounter("endpoint.noteId.http.get");
         JSONObject resultJson = new JSONObject();
+        String noteId = httpServletRequest.getParameter("para");
         List<Note> noteList = noteService.getNoteByIdSQL(noteId);
         JSONArray jsonArr = new JSONArray();
         for (Note n : noteList) {
