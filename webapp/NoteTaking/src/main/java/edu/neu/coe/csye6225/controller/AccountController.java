@@ -90,7 +90,7 @@ public class AccountController {
         }
 
         // validate if user already registered
-        else if (accountValidation.isUserRegistered(user)) {
+        else if (accountValidation.isUserRegistered(user.getUsername())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "register failed");
             jsonObject.put("cause", "user already registered");

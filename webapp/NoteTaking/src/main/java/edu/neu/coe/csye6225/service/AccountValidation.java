@@ -14,8 +14,6 @@ public interface AccountValidation {
     String passwordEncrypt(String password);
 
     // Check user exists or not
-    boolean isUserRegistered (User user);
-
     boolean isUserRegistered(String email);
 
     // Check user password correct or not

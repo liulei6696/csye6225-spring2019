@@ -54,18 +54,18 @@ public class AccountValidationImpl implements AccountValidation {
         return BCrypt.hashpw(password, BCrypt.gensalt(12));
     }
 
-    public boolean isUserRegistered(User user) {
-        User thisuser = userMapper.getUserByUsername(user.getUsername());
-        if (thisuser == null) return false;
-        else return true;
-
-    }
-
+    /**
+     *
+     * @param username String, email address
+     * @return true if user is registered
+     */
     @Override
-    public boolean isUserRegistered(String email) {
-        User thisuser = userMapper.getUserByUsername(email);
-        return (thisuser != null);
+    public boolean isUserRegistered(String username) {
+        User thisuser = userMapper.getUserByUsername(username);
+        return thisuser != null;
+
     }
+
 
     @Override
     public boolean isPasswordCorrect(User user) {

@@ -22,11 +22,11 @@ public class AccountServiceImpl implements AccountService {
     // Log in
     public boolean logIn(User user) {
         if (user == null || user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
-            logger.info("Username or password cannot be empty!");
+            logger.info("Username or password is empty!");
             return false;
         } else {
             // User exists and password correct
-            if (accountValidation.isUserRegistered(user)) {
+            if (accountValidation.isUserRegistered(user.getUsername())) {
                 if (accountValidation.isPasswordCorrect(user)) {
                     logger.info("User: '" + user.getUsername() + "' logged in!");
                     return true;
@@ -53,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
             logger.info("Username or password cannot be empty!");
             return false;
         } else if (accountValidation.nameValidation(username)) {
-            if (accountValidation.isUserRegistered(user)) {
+            if (accountValidation.isUserRegistered(user.getUsername())) {
                 logger.info("User already registered! Please sign in!");
                 return false;
             } else {

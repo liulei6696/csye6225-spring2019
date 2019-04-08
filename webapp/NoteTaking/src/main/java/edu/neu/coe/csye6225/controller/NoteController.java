@@ -4,9 +4,12 @@ import edu.neu.coe.csye6225.entity.Attachment;
 import edu.neu.coe.csye6225.entity.Note;
 import edu.neu.coe.csye6225.entity.User;
 import edu.neu.coe.csye6225.service.*;
+import edu.neu.coe.csye6225.service.impl.NoteServiceImpl;
 import edu.neu.coe.csye6225.util.QuickResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,7 @@ public class NoteController {
     private final NoteService noteService;
     private final AttachmentService attachmentService;
     private final FileService fileService;
+    private static final Logger logger = LoggerFactory.getLogger(NoteController.class);
     private static final StatsDClient statsd = new NonBlockingStatsDClient("my.prefix", "localhost", 8125);
 
     @Autowired
@@ -55,15 +59,10 @@ public class NoteController {
         }
         if (accountService.logIn(user)) {
             JSONObject resultJson = new JSONObject();
-            List<Note> noteList = noteService.getAllNotes(user);
+            List<Note> noteList = noteService.getAllNotes(user.getUsername());
             JSONArray jsonArr = new JSONArray();
             for (Note n : noteList) {
                 JSONObject jo = noteService.getNoteDetailWithAttachment(n.getNoteId());
-//                jo.put("noteId", n.getNoteId());
-//                jo.put("title", n.getTitle());
-////                jo.put("content", n.getContent());
-////                jo.put("created_on", n.getCreateTime());
-//                jo.put("last_updated_on", n.getLastModifiedTime());
                 jsonArr.add(jo);
             }
 
@@ -91,16 +90,19 @@ public class NoteController {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
         if (accountService.logIn(user)) {
+
+            if (!noteService.noteBelongToUser(user.getUsername(), noteId))
+                return QuickResponse.userNoAccess(httpServletResponse);
+
             JSONObject resultJson = new JSONObject();
-            Note note = noteService.getNoteById(user, noteId);
+            Note note = noteService.getNoteById(noteId);
             if (note == null) {
                 httpServletResponse.setHeader("status", String.valueOf(SC_NOT_FOUND));
                 resultJson.put("message", "note not found");
+                logger.warn("Note with ID: " + noteId + " not found");
                 return ResponseEntity.badRequest()
                         .body(resultJson.toString());
             } else {
-
-
                 httpServletResponse.setHeader("status", String.valueOf(HttpStatus.OK));
                 return ResponseEntity.ok()
                         .body(noteService.getNoteDetailWithAttachment(noteId).toString());
@@ -114,7 +116,7 @@ public class NoteController {
 
 
     /**
-     * create a new note using default structure
+     * create a new note, title and content must be passed in
      */
     @RequestMapping(method = RequestMethod.POST, value = "/note")
     public ResponseEntity<String> createNote(@RequestBody Note uploadedNote,
@@ -133,13 +135,14 @@ public class NoteController {
 
         if (accountService.logIn(user)) {
             JSONObject resultJson = new JSONObject();
-            Note note = noteService.createNote(user);
+            Note note = noteService.createNote(user.getUsername());
             note.setContent(uploadedNote.getContent());
             note.setTitle(uploadedNote.getTitle());
-            noteService.updateNote(user, note);
+            noteService.updateNote(note);
 //            JSONArray array= JSONArray.fromObject(note);
             httpServletResponse.setHeader("status", String.valueOf(HttpStatus.CREATED));
             resultJson.put("note", note);
+            logger.info("New note created: " + note.getNoteId());
 //            resultJson.put("message", "Note created success");
             return ResponseEntity.ok()
                     .body(noteService.getNoteDetailWithAttachment(note.getNoteId()).toString());
@@ -172,11 +175,13 @@ public class NoteController {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
         if (accountService.logIn(user)) {
-            Note note = noteService.getNoteById(user, noteId);
+            if (!noteService.noteBelongToUser(user.getUsername(), noteId))
+                return QuickResponse.userNoAccess(httpServletResponse);
+            Note note = noteService.getNoteById(noteId);
             if (note != null) {
                 JSONObject resultJson = new JSONObject();
                 updatedNote.setNoteId(noteId);
-                noteService.updateNote(user, updatedNote);
+                noteService.updateNote(updatedNote);
                 httpServletResponse.setHeader("status", String.valueOf(HttpStatus.NO_CONTENT));
                 resultJson.put("message", "Note updated success");
                 JSONObject noteM = new JSONObject();
@@ -189,6 +194,7 @@ public class NoteController {
                         .body(resultJson.toString());
             } else {
                 JSONObject resultJson = new JSONObject();
+                logger.warn("No note :" + noteId);
                 httpServletResponse.setHeader("status", String.valueOf(HttpStatus.BAD_REQUEST));
                 resultJson.put("message", "No such a note for user " + user.getUsername());
                 return ResponseEntity.badRequest()
@@ -214,22 +220,27 @@ public class NoteController {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
         if (accountService.logIn(user)) {
+            if (!noteService.noteBelongToUser(user.getUsername(), noteId))
+                return QuickResponse.userNoAccess(httpServletResponse);
+
             // delete all of the attachments in this note
-//            List<Attachment> atts = attachmentService.getAllAttachments(noteId);
-//            if (atts != null){
-//                for (Attachment att : atts){
-//                    attachmentService.deleteAttachment(att.getAttachmentId());
-//                    fileService.deleteFile(att.getAttachmentId());
-//                }
-//            } // TODO: change this logic, could successfully delete attachments but delete note failed!
-            if (noteService.deleteNote(user, noteId)) {
+            List<Attachment> atts = attachmentService.getAllAttachments(noteId);
+            if (atts != null){
+                for (Attachment att : atts){
+                    attachmentService.deleteAttachment(att.getAttachmentId());
+                    fileService.deleteFile(att.getAttachmentId());
+                }
+            }
+            if (noteService.deleteNote(noteId)) {
                 httpServletResponse.setHeader("status", String.valueOf(HttpStatus.NO_CONTENT));
                 resultJson.put("message", "Note deleted success");
+                logger.info("Note " + noteId + " deleted, related attachments should be deleted");
                 return ResponseEntity.ok()
                         .body(resultJson.toString());
             } else {
                 httpServletResponse.setHeader("status", String.valueOf(HttpStatus.BAD_REQUEST));
                 resultJson.put("message", "Fail to delete note!");
+                logger.warn("Failed to delete note :" + noteId);
                 return ResponseEntity.badRequest()
                         .body(resultJson.toString());
             }

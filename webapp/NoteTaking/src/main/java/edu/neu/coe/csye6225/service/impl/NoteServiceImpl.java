@@ -30,79 +30,68 @@ public class NoteServiceImpl implements NoteService {
     private static final Logger logger = LoggerFactory.getLogger(NoteServiceImpl.class);
 
     @Override
-    public Note createNote(User user) {
-        Note note = new Note(user.getUsername(), "Title of the note", "Content of the note");
+    public Note createNote(String username) {
+        Note note = new Note(username, "Default Title of the note", "Default Content of the note");
         if (noteMapper.insertNote(note) > 0) {
-            logger.info("Note created for user: " + user.getUsername());
-            return note;
-        } else return null;
-    }
-
-    @Override
-    public boolean deleteNote(User user, String noteId) {
-        Note note = noteMapper.getNoteById(noteId);
-        if (note == null) return false;
-        String noteUserId = note.getUserId();
-        if (user.getUsername().equals(noteUserId)) {
-            if (noteMapper.deleteNote(note)) {
-                logger.info("Note deleted!");
-                return true;
-            } else {
-                logger.info("Fail to delete!");
-                return false;
-            }
-
-        }
-        logger.info("No authorization to this note! Fail to delete!");
-        return false;
-
-    }
-
-    @Override
-    public Note updateNote(User user, Note note) {
-        if (note == null) {
-            logger.info("Please specify the note you want to update!");
-            return null;
-        }
-        Note realNote = noteMapper.getNoteById(note.getNoteId());
-        if (user.getUsername().equals(realNote.getUserId())) {
-            note.setLastModifiedTime();
-            if (noteMapper.updateNote(note) > 0) {
-                logger.info("Note updated!");
-                return noteMapper.getNoteById(note.getNoteId());
-            } else {
-                logger.info("Fail to update!");
-                return null;
-            }
-
-        }
-        logger.info("No authorization to this note! Fail to delete!");
-        return null;
-    }
-
-    @Override
-    public Note getNoteById(User user, String noteId) {
-        Note note = noteMapper.getNoteById(noteId);
-        if (note == null) return note;
-        String noteUserId = note.getUserId();
-        if (user.getUsername().equals(noteUserId)) {
-            note = noteMapper.getNoteById(noteId);
-            logger.info("Get note successfully!");
+            logger.info("Note created, note ID : " + note.getNoteId());
             return note;
         } else {
-            logger.info("No authorization to this note! Fail to get!");
+            logger.error("Note create failed");
             return null;
         }
+    }
 
+    @Override
+    public boolean deleteNote(String noteId) {
+        Note note = noteMapper.getNoteById(noteId);
+        if (note == null) {
+            logger.warn("Deleting a non-existing note: " + noteId);
+            return false;
+        }
+        if (noteMapper.deleteNote(note)) {
+            logger.info("Note [ " + noteId + " ] deleted!");
+            return true;
+        } else {
+            logger.error("Fail to delete note: " + noteId);
+            return false;
+        }
+    }
+
+    @Override
+    public Note updateNote(Note note) {
+        if (note == null) {
+            logger.error("Update with null note");
+            return null;
+        }
+//        Note realNote = noteMapper.getNoteById(note.getNoteId());
+        note.setLastModifiedTime();
+        if (noteMapper.updateNote(note) > 0) {
+            logger.info("Note updated!");
+            return noteMapper.getNoteById(note.getNoteId());
+        } else {
+            logger.error("Fail to update!");
+            return null;
+        }
+    }
+
+    @Override
+    public Note getNoteById(String noteId) {
+        Note note = noteMapper.getNoteById(noteId);
+        if (note == null) {
+            logger.warn("Note with ID: " + noteId + " not exist");
+            return null;
+        }
+//        String noteUserId = note.getUserId();
+        note = noteMapper.getNoteById(noteId);
+        logger.info("Get note successfully!");
+        return note;
 
     }
 
 
     @Override
-    public List<Note> getAllNotes(User user) {
-        List<Note> noteList = new ArrayList<>();
-        noteList = noteMapper.getAllNotes(user.getUsername());
-        return noteList;
+    public List<Note> getAllNotes(String username) {
+        return noteMapper.getAllNotes(username);
     }
 
     @Override
