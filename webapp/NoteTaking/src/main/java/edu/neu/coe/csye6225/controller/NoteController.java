@@ -175,7 +175,7 @@ public class NoteController {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
         if (accountService.logIn(user)) {
-            if (!noteService.noteBelongToUser(user.getUsername(), noteId))
+            if (!noteService.noteBelongToUser(noteId, user.getUsername()))
                 return QuickResponse.userNoAccess(httpServletResponse);
             Note note = noteService.getNoteById(noteId);
             if (note != null) {
@@ -220,7 +220,7 @@ public class NoteController {
             return QuickResponse.userUnauthorized(httpServletResponse);
         }
         if (accountService.logIn(user)) {
-            if (!noteService.noteBelongToUser(user.getUsername(), noteId))
+            if (!noteService.noteBelongToUser(noteId, user.getUsername()))
                 return QuickResponse.userNoAccess(httpServletResponse);
 
             // delete all of the attachments in this note
