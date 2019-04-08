@@ -91,7 +91,7 @@ public class NoteController {
         }
         if (accountService.logIn(user)) {
 
-            if (!noteService.noteBelongToUser(user.getUsername(), noteId))
+            if (!noteService.noteBelongToUser(noteId, user.getUsername()))
                 return QuickResponse.userNoAccess(httpServletResponse);
 
             JSONObject resultJson = new JSONObject();
