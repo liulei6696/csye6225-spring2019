@@ -64,7 +64,8 @@ public class FileServiceS3Impl implements FileService {
 
         try {
             // creating the file in the server (temporarily)
-            File file = new File("/tmp/"+fileName);
+            // attach note ID  at the end of file name
+            File file = new File("/tmp/"+fileName + noteId);
 
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(multipartFile.getBytes());

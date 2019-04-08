@@ -28,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
             // User exists and password correct
             if (accountValidation.isUserRegistered(user.getUsername())) {
                 if (accountValidation.isPasswordCorrect(user)) {
-                    logger.info("User: '" + user.getUsername() + "' logged in!");
+                    logger.info("User logged in!");
                     return true;
                 } else {
                     logger.info("Wrong username or password!");
