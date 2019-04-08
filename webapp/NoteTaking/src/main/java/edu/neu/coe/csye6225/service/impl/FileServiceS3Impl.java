@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 @Component
 @Profile("prod")
@@ -47,25 +48,31 @@ public class FileServiceS3Impl implements FileService {
 
         String fileName = multipartFile.getOriginalFilename();
         if (fileName == null) {
-            logger.info("File with no name is not allowed");
+            logger.warn("File with no name is not allowed");
             return null;
         }
         int index = fileName.lastIndexOf(".");
         String fileType = "";
-        if(index != -1){ // if the file does not have suffix
+        String fileNameWithoutType = fileName;
+        if(index != -1){ // if the file have suffix
             fileType = fileName.substring(index);
+            fileNameWithoutType = fileName.substring(0, index);
         }
 
-        // if file already submitted or the filename is the same
-        for (Attachment att : attachmentService.getAllAttachments(noteId)) {
-            if (fileName.equals(att.getFileName()))
+        // if file already submitted under this note
+        fileName = fileNameWithoutType + "_" + noteId + fileType; // construct new file name
+        List<Attachment> atts = attachmentService.getAllAttachments(noteId);
+        if (atts != null) {
+            for (Attachment att : atts) {
+                if (fileName.equals(att.getFileName()))
+                    logger.warn("file [ " + fileName + " ] already in this note");
                 return att;
+            }
         }
 
         try {
             // creating the file in the server (temporarily)
-            // attach note ID  at the end of file name
-            File file = new File("/tmp/"+fileName + noteId);
+            File file = new File("/tmp/"+fileName);
 
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(multipartFile.getBytes());
