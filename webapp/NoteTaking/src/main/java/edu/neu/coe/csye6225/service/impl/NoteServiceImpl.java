@@ -96,10 +96,10 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public Boolean noteBelongToUser(String noteId, String userId) {
-        logger.info("Get note " + noteId + ", and user " + userId);
+//        logger.info("Get note " + noteId + ", and user " + userId);
         if (noteMapper.getNoteById(noteId) == null)
             return false;
-        logger.info("from database " + noteMapper.getNoteById(noteId).getUserId());
+//        logger.info("from database " + noteMapper.getNoteById(noteId).getUserId());
         return noteMapper.getNoteById(noteId).getUserId().equals(userId);
     }
 

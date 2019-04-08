@@ -64,9 +64,10 @@ public class FileServiceS3Impl implements FileService {
         List<Attachment> atts = attachmentService.getAllAttachments(noteId);
         if (atts != null) {
             for (Attachment att : atts) {
-                if (fileName.equals(att.getFileName()))
+                if (fileName.equals(att.getFileName())) {
                     logger.warn("file [ " + fileName + " ] already in this note");
-                return att;
+                    return att;
+                }
             }
         }
 
