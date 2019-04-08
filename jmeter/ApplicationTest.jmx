@@ -18,8 +18,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">500</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">600</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -62,9 +62,9 @@
               <stringProp name="-1244085905">domainName</stringProp>
             </collectionProp>
             <collectionProp name="UserParameters.thread_values">
-              <collectionProp name="284515541">
+              <collectionProp name="-349491199">
                 <stringProp name="-1534413909">${__UUID()}@jmeter.test</stringProp>
-                <stringProp name="1023266881">${__RandomString(4, ABCD)}!${__RandomString(4, abcd)}</stringProp>
+                <stringProp name="567610505">${__RandomString(4, ABCDEFGHIJKLMNOPQRSTUVWXYZ)}!2${__RandomString(4, abcdefghijklmnopqrstuvwxyz)}</stringProp>
                 <stringProp name="491391413">csye6225-spring2019-liulei1.me</stringProp>
               </collectionProp>
             </collectionProp>
