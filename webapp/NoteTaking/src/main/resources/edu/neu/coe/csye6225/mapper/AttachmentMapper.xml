@@ -58,7 +58,7 @@
         create table if not exists attachment (
         attachmentId varchar (100),
         noteId varchar (100),
-        url varchar (100),
+        url varchar (255),
         fileSize int ,
         fileType varchar (50),
         fileName varchar (100),

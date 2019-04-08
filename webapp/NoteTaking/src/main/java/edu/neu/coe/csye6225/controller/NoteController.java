@@ -227,8 +227,8 @@ public class NoteController {
             List<Attachment> atts = attachmentService.getAllAttachments(noteId);
             if (atts != null){
                 for (Attachment att : atts){
-                    attachmentService.deleteAttachment(att.getAttachmentId());
                     fileService.deleteFile(att.getAttachmentId());
+                    attachmentService.deleteAttachment(att.getAttachmentId());
                 }
             }
             if (noteService.deleteNote(noteId)) {
