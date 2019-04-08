@@ -52,9 +52,9 @@ public class AccountValidationImplTest {
         user.setPassword("123@#$qer");
         if(userMapper.getUserByUsername(user.getUsername())!=null)
             userMapper.deleteUserByUsername(user.getUsername());
-        assertFalse(accountValidation.isUserRegistered(user));
+        assertFalse(accountValidation.isUserRegistered(user.getUsername()));
         accountService.signUp(user);
-        assertTrue(accountValidation.isUserRegistered(user));
+        assertTrue(accountValidation.isUserRegistered(user.getUsername()));
 
     }
 

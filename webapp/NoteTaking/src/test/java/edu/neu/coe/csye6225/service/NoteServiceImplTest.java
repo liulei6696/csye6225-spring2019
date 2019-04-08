@@ -69,7 +69,7 @@ public class NoteServiceImplTest {
     @Test
     @Transactional
     public void creatNoteTest() {
-        Note newNote = noteService.createNote(user);
+        Note newNote = noteService.createNote(user.getUsername());
         assertThat(noteMapper.getNoteById(newNote.getNoteId()), notNullValue());
     }
 
@@ -79,7 +79,7 @@ public class NoteServiceImplTest {
      */
     @Test
     public void deleteNoteTest() {
-        noteService.deleteNote(user, note.getNoteId());
+        noteService.deleteNote(note.getNoteId());
         assertThat(noteMapper.getNoteById(note.getNoteId()), nullValue());
     }
 
@@ -91,7 +91,7 @@ public class NoteServiceImplTest {
     public void updateNoteTest() {
         String content = "I've changed my mind, this is a diary! ";
         note.setContent(content);
-        noteService.updateNote(user, note);
+        noteService.updateNote(note);
 
         assertThat(noteMapper.getNoteById(note.getNoteId()).getContent(), equalTo(content));
     }
@@ -102,7 +102,7 @@ public class NoteServiceImplTest {
     @Test
     public void getNodeByIdTest() {
         // TODO: verify the date format of returned note object
-        assertThat(noteService.getNoteById(user, note.getNoteId()).getNoteId(),
+        assertThat(noteService.getNoteById( note.getNoteId()).getNoteId(),
                 equalTo(noteMapper.getNoteById(note.getNoteId()).getNoteId()));
     }
 
@@ -111,8 +111,8 @@ public class NoteServiceImplTest {
      */
     @Test
     public void getAllNotesTest() {
-        assertThat(noteService.getAllNotes(user).size(), equalTo(1));
-        assertThat(noteService.getAllNotes(user).get(0).getNoteId(),
+        assertThat(noteService.getAllNotes(user.getUsername()).size(), equalTo(1));
+        assertThat(noteService.getAllNotes(user.getUsername()).get(0).getNoteId(),
                 equalTo(note.getNoteId()));
     }
 }
