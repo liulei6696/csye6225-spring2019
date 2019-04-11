@@ -154,7 +154,7 @@ public class AccountController {
     /**
      * create a new note using default structure
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/reset")
+    @RequestMapping(method = RequestMethod.POST, value = "/pwdreset")
     public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> resetEmail,
                                                 HttpServletResponse httpServletResponse) throws IOException {
 
