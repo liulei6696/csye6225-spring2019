@@ -104,6 +104,26 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
+    public Boolean fileAlreadyInNote(String noteId, String originalFileName) {
+        int index = originalFileName.lastIndexOf(".");
+        String fileType = "";
+        String fileNameWithoutType = originalFileName;
+        if(index != -1){
+            fileType = originalFileName.substring(index);
+            fileNameWithoutType = originalFileName.substring(0, index);
+        }
+        String afterName = fileNameWithoutType + "_" + noteId + fileType;
+        List<Attachment> atts = attachmentService.getAllAttachments(noteId);
+        if (atts != null) {
+            for (Attachment att : atts) {
+                if (att.getFileName().equals(afterName))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public JSONObject getNoteDetailWithAttachment(String noteId) {
         JSONObject re = new JSONObject();
         Note note = noteMapper.getNoteById(noteId);

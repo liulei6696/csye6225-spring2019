@@ -16,6 +16,7 @@ public interface NoteService {
     JSONObject getNoteDetailWithAttachment (String noteId);
     void createNew();
     List<Note> getNoteByIdSQL(String noteId);
+    Boolean fileAlreadyInNote(String noteId, String originalFileName);
 }
 
 

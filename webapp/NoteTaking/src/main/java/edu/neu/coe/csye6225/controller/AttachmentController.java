@@ -106,7 +106,7 @@ public class AttachmentController {
 
 
     /**
-     * get all the attachments related to the note
+     * upload new file and create a new attachment
      *
      */
     @PostMapping("/note/{noteId}/attachments")
@@ -179,6 +179,7 @@ public class AttachmentController {
                         .body(jsonObject.toString());
             }
 
+            fileService.deleteFile(attachmentId);
             Attachment att = fileService.saveFile(noteId, file);
 
             if(att == null) {
