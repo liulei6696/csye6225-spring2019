@@ -127,6 +127,9 @@ public class AttachmentController {
             if (!noteService.noteBelongToUser(noteId, user.getUsername())) {
                 return QuickResponse.userNoAccess(httpServletResponse);
             } else {
+                if (noteService.fileAlreadyInNote(noteId, file.getOriginalFilename())) {
+                    return QuickResponse.quickBadRequestConstruct(httpServletResponse, "file with name [ " + file.getOriginalFilename() + " ] already under this note. ");
+                }
                 Attachment attachment = fileService.saveFile(noteId, file);
                 if (attachment == null) {
                     JSONObject jsonObject = new JSONObject();
